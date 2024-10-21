@@ -7,6 +7,7 @@ import { useState } from "react";
 import { FaBars, FaDiscord, FaGamepad, FaGithub, FaTimes } from "react-icons/fa";
 
 import ErrorBoundary from "../components/ErrorBoundary";
+
 export default function App({
     Component,
     pageProps: { session, ...pageProps },
@@ -101,37 +102,10 @@ export default function App({
                         </ul>
                     </motion.div>
 
-                    <div className="flex-grow">
+                    <div>
                         <Component {...pageProps} />
                     </div>
                 </div>
-                <footer className="mt-10 w-full bg-black py-2">
-                    <div className="text-center">
-                        <div className="flex justify-center space-x-6">
-                            {icons.map(({ id, name, icon: Icon, link }) => (
-                                <motion.div
-                                    key={id}
-                                    className="group relative"
-                                    whileHover={{ scale: 1.1 }}
-                                    whileTap={{ scale: 0.95 }}
-                                >
-                                    <a
-                                        href={link}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="text-gray-400 transition-colors hover:text-white"
-                                    >
-                                        <Icon size={30} />
-                                    </a>
-
-                                    <span className="absolute bottom-10 left-1/2 -translate-x-1/2 scale-0 transform rounded-md bg-black px-2 py-1 text-xs text-white ring-1 ring-white transition-all duration-200 group-hover:scale-100">
-                                        {name}
-                                    </span>
-                                </motion.div>
-                            ))}
-                        </div>
-                    </div>
-                </footer>
             </ErrorBoundary>
         </SessionProvider>
     );

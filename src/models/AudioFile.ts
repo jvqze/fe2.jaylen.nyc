@@ -1,8 +1,9 @@
 import mongoose, { model, models, Schema } from "mongoose";
 
-const audioFileSchema = new Schema({
+const audioFileSchema = new mongoose.Schema({
     email: { type: String, required: true },
     audioLink: { type: String, required: true },
+    title: { type: String, required: false },
     createdAt: { type: Date, default: Date.now },
 });
 

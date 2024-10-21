@@ -5,10 +5,7 @@ import Document, { Head, Html, Main, NextScript } from "next/document";
 export default class ADocument extends Document {
     render() {
         return (
-            <Html
-                lang="en"
-                className="min-h-screen w-full overflow-x-hidden overscroll-none antialiased dark:bg-ThemeDark dark:text-white"
-            >
+            <Html lang="en">
                 <meta
                     name="viewport"
                     content="width=device-width, initial-scale=1, viewport-fit=cover"

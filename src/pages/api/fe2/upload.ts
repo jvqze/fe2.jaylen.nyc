@@ -47,6 +47,11 @@ interface CustomSession extends Session {
     };
 }
 
+/* FOR FUTURE USES
+ const cleanTitle = (input: string) => {
+    return input.replace(/[^a-zA-Z0-9]/g, "");
+}; **/
+
 export default async function handler(req: NextApiRequest, res: NextApiResponse): Promise<void> {
     try {
         const session = (await getServerSession(req, res, authOptions)) as CustomSession | null;
@@ -82,6 +87,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
             const formData = new FormData();
             const uploadDomain = "cdn.jaylen.nyc";
+
+            let cleanedTitle: string | undefined;
+            /* if (fields.title) {
+                cleanedTitle = cleanTitle(fields.title);
+            }*/
             const newFilename = fileToUpload.originalFilename || "uploaded_file";
 
             const payloadJson = JSON.stringify({
@@ -105,12 +115,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                 const statusCode = response.status;
 
                 if (statusCode === 200) {
-                    console.log(responseData);
                     const newFilePath = responseData.data.direct_url;
 
                     const newAudioFile = new AudioFileModel({
                         email,
                         audioLink: newFilePath,
+                        title: cleanedTitle || null,
                         createdAt: new Date(),
                     });
 
@@ -121,7 +131,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                         audioLink: newFilePath,
                     });
                 } else {
-                    console.log(responseData);
                     res.status(400).json({
                         message: `Error uploading: ${responseData.error?.message ?? responseData}`,
                     });
