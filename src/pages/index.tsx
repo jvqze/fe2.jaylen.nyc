@@ -60,9 +60,9 @@ export default function Page(): JSX.Element {
                     body: formData,
                     credentials: "include",
                 });
-
+            
                 const data = await res.json();
-
+            
                 if (res.ok) {
                     setUploadStatus("File uploaded successfully.");
                     setUploadedUrl(data.audioLink);
@@ -72,8 +72,9 @@ export default function Page(): JSX.Element {
                     setUploadStatus(`${data.message || "Upload failed. Please try again."}`);
                 }
             } catch (error) {
-                setUploadStatus("Error uploading file.");
+                setUploadStatus(`Error uploading file: ${error instanceof Error ? error.message : "Unknown error"}`);
             }
+            
         } else {
             setUploadStatus("Please select a file to upload.");
         }
