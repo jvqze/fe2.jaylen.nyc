@@ -1,57 +1,119 @@
-# jaylen.nyc
+# FE2 Audio Uploader
 
-Welcome to the repository for [jaylen.nyc](https://jaylen.nyc) – my personal website where I showcase projects, share updates, and coonect with everyone!
+This project is an **open-source tool** designed for users who want to upload custom audio for **Flood Escape 2** (FE2) maps. It provides a smooth and user-friendly interface for uploading `.mp3` and `.ogg` files, and it comes with a list page to view all previously uploaded files.
 
-## 🚀 Features
+## Features
 
--   **Real-time Discord Presence**: Displays my current status, activities, and Spotify listening status using the Lanyard API.
--   **Dynamic Blog**: Stay updated with my latest thoughts, posts, and ideas.
--   **Clean Design**: A modern UI built with Tailwind CSS and optimized for performance.
--   **Fast and Responsive**: Powered by Next.js for server-side rendering, making the site fast and responsive on all devices.
+- **Audio Uploader**: Upload `.mp3` or `.ogg` files to use in your FE2 maps.
+- **List Page**: View a list of all your uploaded audio files, with direct links to each file.
+- **Discord Integration**: Log in with your Discord account to track your uploads.
+- **Open Source**: This project is open source, meaning you can clone, modify, or contribute to it.
 
-## 🛠️ Technologies Used
+## Live Version
 
--   **Next.js**: The React framework for building fast and scalable web applications.
--   **Tailwind CSS**: A utility-first CSS framework for custom styling.
--   **TypeScript**: For static type checking and improved developer experience.
--   **Lanyard API**: For real-time Discord presence integration.
+While the project is open-source, the live version of this uploader can be accessed by anyone at:
 
-## 📦 Getting Started
+- **FE2 Audio Uploader**: <https://fe2.jaylen.nyc/>  
+- **List Page**: <https://fe2.jaylen.nyc/list>
+
+> **Note**: You will need to log in with your Discord account to use the uploader and view your files.
+
+## How It Works
+
+### 1. Audio Uploader
+
+- Once logged in via Discord, users can upload `.mp3` or `.ogg` files.
+- Upon successful upload, the file will be stored, and a direct link will be provided for use in FE2 maps.
+
+### 2. List Page
+
+- The list page allows you to see all the audio files you've uploaded, complete with direct links for easy access.
+- The list is tied to your Discord account, so only you can see the files you've uploaded.
+
+## Open-Source Contributions
+
+Contributions are welcome! If you would like to contribute:
+
+1. Fork the repository.
+2. Create a feature branch (`git checkout -b feature-name`).
+3. Commit your changes (`git commit -m 'Add some feature'`).
+4. Push to the branch (`git push origin feature-name`).
+5. Create a pull request.
 
 ### Prerequisites
 
-Make sure you have the following installed on your machine:
+Before setting up the project locally, ensure you have the following installed on your machine:
 
--   [Node.js](https://nodejs.org/)
--   [Yarn](https://yarnpkg.com/) or [npm](https://www.npmjs.com/)
+- [Node.js](https://nodejs.org/)
+- [Yarn](https://yarnpkg.com/) or [npm](https://www.npmjs.com/)
 
 ### Installation
 
-1. **Clone the repository**
+1. Clone the repository:
 
     ```bash
-    git clone https://github.com/jvqze/jaylen.nyc.git
-
+    git clone https://github.com/jvqze/fe2.jaylen.nyc.git
     ```
 
-2. **Navigate to the project directory**
+2. Navigate to the project directory:
 
     ```bash
     cd jaylen.nyc
-
     ```
 
-3. **Install the dependencies**
+3. Install the dependencies:
 
     ```bash
-    yarn install or npm install
+    yarn install
     ```
 
-## Deployment
+    or
 
-You can deploy this project using platforms like [Vercel](https://vercel.com/home) or [Netlify](https://www.netlify.com). Here's how to deploy it on Vercel:
+    ```bash
+    npm install
+    ```
 
-1. Push your project to GitHub.
-2. Go to Vercel and import your repository.
-3. Set your environment variables if needed.
-4. Deploy and enjoy your website!
+4. Create a `.env` file in the root directory, and add the required environment variables:
+
+    ```
+    DISCORD_CLIENT_ID=your-discord-client-id
+    DISCORD_CLIENT_SECRET=your-discord-client-secret
+    MONGODB_URI=mongodb-uri
+    TIXTE_API_KEY=api-key-for-tixte
+    NEXTAUTH_SECRET=your-next-auth-secret
+    ```
+
+5. Start the development server:
+
+    ```bash
+    yarn dev
+    ```
+
+    or
+
+    ```bash
+    npm run dev
+    ```
+
+6. Open your browser and navigate to `http://localhost:3000` to see the project in action.
+
+## Technologies Used
+
+- **Next.js**: React framework for building server-side rendering and static web applications.
+- **Tailwind CSS**: A utility-first CSS framework for designing the frontend.
+- **Framer Motion**: A React animation library.
+- **NextAuth.js**: Authentication for Next.js.
+- **MongoDB**: Used for storing uploaded file information.
+- **Discord OAuth**: Used for logging in and tracking user uploads.
+- [**Tixte**](https://tixte.com): Used to store files of users uploads!
+
+## Contact
+
+If you have any questions or feedback, feel free to reach out:
+
+- Discord: [jvqze](https://discord.com/users/1203092268672753785)
+- GitHub: [jvqze](https://github.com/jvqze)
+
+---
+
+Feel free to clone the repo, explore the code, and contribute to making it better!
