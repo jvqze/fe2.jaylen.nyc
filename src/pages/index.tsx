@@ -1,121 +1,164 @@
-import { motion } from "framer-motion";
+import { signIn, signOut, useSession } from "next-auth/react";
 import Head from "next/head";
-import { Data as LanyardData, useLanyard } from "use-lanyard";
+import { ChangeEvent, useEffect, useState } from "react";
 
-import SpotifyIntegration from "../components/SpotifyIntegration";
+export default function Page(): JSX.Element {
+    const { data: session } = useSession();
+    const [selectedFile, setSelectedFile] = useState<File | null>(null);
+    const [uploadStatus, setUploadStatus] = useState<string>("");
+    const [uploadedUrl, setUploadedUrl] = useState<string | null>(null);
+    const [isCopied, setIsCopied] = useState<boolean>(false);
 
-const DISCORD_ID = "1203092268672753785";
-const statusMap = {
-    online: "bg-green-500",
-    idle: "bg-yellow-500",
-    dnd: "bg-red-500",
-    offline: "bg-neutral-500",
-};
+    const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
 
-const statusTextMap = {
-    online: "Online",
-    idle: "Idle",
-    dnd: "Do Not Disturb",
-    offline: "Offline",
-};
+        if (file) {
+            console.log("File Type:", file.type);
+            const isValidAudio =
+                file.type === "audio/mp3" ||
+                file.type === "audio/mpeg" ||
+                file.type === "audio/ogg";
 
-type lanyardprops = {
-    lanyard: LanyardData;
-};
+            if (isValidAudio) {
+                setUploadStatus("");
+                setSelectedFile(file);
+            } else {
+                setUploadStatus("Please upload a valid .mp3 or .ogg file.");
+                setSelectedFile(null);
+            }
+        }
+    };
 
-export default function Page(prop: lanyardprops): JSX.Element {
-    const { data: lanyard } = useLanyard(DISCORD_ID, {
-        initialData: prop.lanyard,
-    });
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setUploadStatus("");
+        setUploadedUrl(null);
+        setIsCopied(false);
 
-    const status = lanyard?.discord_status || "offline";
-    const statusColor = statusMap[status];
-    const statusText = statusTextMap[status];
+        if (!session) {
+            setUploadStatus("You must be logged in to upload a file.");
+            return;
+        }
 
-    const activities = lanyard?.activities || [];
-    const customStatusActivity = activities.find(activity => activity.type === 4);
+        if (selectedFile) {
+            const formData = new FormData();
+            formData.append("audioFile", selectedFile);
+            formData.append("email", session.user?.email || "");
+
+            try {
+                const res = await fetch("/api/fe2/upload", {
+                    method: "POST",
+                    body: formData,
+                    credentials: "include",
+                });
+
+                const data = await res.json();
+                console.log("data", data);
+
+                if (res.ok) {
+                    setUploadStatus("File uploaded successfully.");
+                    setUploadedUrl(data.audioLink);
+                    setSelectedFile(null);
+                } else {
+                    console.error("Upload error response:", data);
+                    setUploadStatus(`${data.message || "Upload failed. Please try again."}`);
+                }
+            } catch (error) {
+                console.error("Error uploading file:", error);
+                setUploadStatus("Error uploading file.");
+            }
+        } else {
+            setUploadStatus("Please select a file to upload.");
+        }
+    };
+
+    const handleCopyToClipboard = () => {
+        if (uploadedUrl) {
+            navigator.clipboard.writeText(uploadedUrl).then(() => {
+                setIsCopied(true);
+                setUploadStatus("Direct URL copied to clipboard.");
+            });
+        }
+    };
+
+    useEffect(() => {
+        if (isCopied) {
+            const timer = setTimeout(() => setIsCopied(false), 3000);
+            return () => clearTimeout(timer);
+        }
+    }, [isCopied]);
 
     return (
-        <div className="">
+        <div>
             <Head>
-                <title>jaylen.nyc</title>
+                <title>FE2 | Audio Uploader</title>
             </Head>
 
-            <main className="flex min-h-screen flex-col items-center justify-center p-4">
-                <div className="w-full max-w-full rounded-lg bg-[#202020] p-6 shadow-2xl sm:max-w-lg sm:p-8 md:max-w-xl">
-                    <div className="pointer-events-none absolute left-0 top-0 h-full w-full rounded-lg bg-gradient-to-b from-[#131212] to-transparent opacity-10"></div>
-                    <div className="flex flex-col items-center space-y-4 sm:flex-row sm:items-start sm:space-x-4 sm:space-y-0">
-                        <div className="relative">
-                            <img
-                                className="h-20 w-20 rounded-full border-2 border-gray-500 sm:h-24 sm:w-24"
-                                src={`https://cdn.discordapp.com/avatars/${lanyard?.discord_user.id}/${lanyard?.discord_user.avatar}.png`}
-                                alt="Profile Avatar"
+            <main className="flex min-h-screen flex-col items-center justify-center p-6">
+                <h1 className="mb-6 text-4xl font-extrabold">FE2 AUDIO UPLOADER BY JVQZE</h1>
+                {session ? (
+                    <div className="w-full max-w-md rounded-lg p-6 shadow-lg">
+                        <p className="mb-4">
+                            Logged in as{" "}
+                            <span className="font-extrabold">{session.user?.name}</span>
+                        </p>
+                        <form onSubmit={handleSubmit} className="flex flex-col">
+                            <input
+                                type="file"
+                                accept=".mp3, .ogg"
+                                onChange={handleFileChange}
+                                className="mb-4 rounded border border-gray-300 p-2 transition hover:border-blue-500 focus:outline-none focus:ring focus:ring-blue-300"
                             />
-                            <span
-                                className={`absolute bottom-1 right-1 h-5 w-5 rounded-full border-2 border-[#242121] sm:h-6 sm:w-6 ${statusColor}`}
-                            ></span>
-                        </div>
-                        <div className="text-center sm:text-left">
-                            <h2 className="text-lg font-semibold text-white sm:text-2xl">
-                                {lanyard?.discord_user.global_name}
-                            </h2>
-                            <p className="text-sm text-gray-400 sm:text-base">{statusText}</p>
-                            {customStatusActivity && (
-                                <p className="sm:text-md mt-1 text-sm text-gray-300">
-                                    {customStatusActivity.state}
+                            <button
+                                type="submit"
+                                className="mb-2 rounded bg-blue-600 px-4 py-2 transition hover:bg-blue-700"
+                            >
+                                Upload
+                            </button>
+                            {uploadStatus && (
+                                <p
+                                    className={`mt-2 ${
+                                        uploadStatus.toLowerCase().includes("error") ||
+                                        uploadStatus.toLowerCase().includes("failed")
+                                            ? "text-red-600"
+                                            : "text-green-600"
+                                    }`}
+                                >
+                                    {uploadStatus}
                                 </p>
                             )}
-                        </div>
-                    </div>
+                        </form>
 
-                    <div className="space-y-4">
-                        {activities
-                            .filter(activity => activity.type !== 4)
-                            .filter(
-                                activity =>
-                                    activity.name !== "Spotify" &&
-                                    activity.application_id?.toString() !== "spotify",
-                            )
-                            .map(activity => (
-                                <motion.div
-                                    key={activity.id}
-                                    initial={{ opacity: 0, y: 10 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    transition={{ duration: 0.3 }}
-                                    className="mt-4 flex items-center space-x-3 rounded-md bg-gray-800 p-3 sm:space-x-4 sm:p-4"
+                        {uploadedUrl && (
+                            <div className="mt-4 flex flex-col items-center space-y-2">
+                                <p className="text-blue-500 underline">{uploadedUrl}</p>
+                                <button
+                                    onClick={handleCopyToClipboard}
+                                    className="rounded bg-gray-600 px-4 py-2 text-white transition hover:bg-gray-700"
                                 >
-                                    {activity.assets?.large_image && (
-                                        <img
-                                            className="h-10 w-10 rounded-md sm:h-12 sm:w-12"
-                                            src={`https://${activity.assets.small_image.split("/https/")[1]}`}
-                                            alt={activity.name}
-                                        />
-                                    )}
-                                    <div>
-                                        <p className="text-base font-semibold text-white sm:text-lg">
-                                            {activity.name}
-                                        </p>
-                                        {activity.details && (
-                                            <p className="text-xs text-gray-400 sm:text-sm">
-                                                {activity.details}
-                                            </p>
-                                        )}
-                                        {activity.state && (
-                                            <p className="text-xs text-gray-400 sm:text-sm">
-                                                {activity.state}
-                                            </p>
-                                        )}
-                                    </div>
-                                </motion.div>
-                            ))}
-                    </div>
+                                    {isCopied ? "Copied!" : "Copy Direct URL to Clipboard"}
+                                </button>
+                            </div>
+                        )}
 
-                    {lanyard?.listening_to_spotify && (
-                        <div className="mt-3">
-                            <SpotifyIntegration />
-                        </div>
-                    )}
-                </div>
+                        <button
+                            onClick={() => signOut()}
+                            className="mt-4 rounded bg-red-600 px-4 py-2 transition hover:bg-red-700"
+                        >
+                            Sign out
+                        </button>
+                    </div>
+                ) : (
+                    <div className="w-full max-w-md rounded-lg bg-neutral-950 p-6 text-center shadow-lg">
+                        <p>You must be logged in to upload a file.</p>
+                        <button
+                            onClick={() => signIn("discord")}
+                            className="mt-4 rounded bg-green-600 px-4 py-2 transition hover:bg-green-700"
+                        >
+                            Sign in with Discord
+                        </button>
+                    </div>
+                )}
             </main>
         </div>
     );

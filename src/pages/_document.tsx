@@ -21,7 +21,7 @@ export default class ADocument extends Document {
                         href="https://avatars.githubusercontent.com/u/159128860?v=4"
                     />
                     <meta name="theme-color" content="#ffffff" />
-                    <meta name="description" content="Welcome to my website!" />
+                    <meta name="description" content="GE2 Uploader for the cool kids 😎" />
 
                     <link rel="preconnect" href="https://fonts.googleapis.com" />
                     <link rel="preconnect" href="https://fonts.gstatic.com" />

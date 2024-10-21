@@ -13,16 +13,7 @@ module.exports = {
             colors: {
                 ThemeDark: "#111212",
             },
-            animation: {
-                "tween-in-out": "tweenInOut 3s infinite",
-            },
-            keyframes: {
-                tweenInOut: {
-                    "0%, 100%": { opacity: 0, transform: "scale(0.9)" },
-                    "50%": { opacity: 1, transform: "scale(1)" },
-                },
-            },
         },
     },
-    plugins: [require("@tailwindcss/typography")],
+    plugins: [],
 };

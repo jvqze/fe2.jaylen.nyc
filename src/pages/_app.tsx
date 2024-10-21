@@ -3,16 +3,10 @@ import "../styles/globals.css";
 import { motion } from "framer-motion";
 import { SessionProvider } from "next-auth/react";
 import { AppProps } from "next/app";
-import dynamic from "next/dynamic";
 import { useState } from "react";
 import { FaBars, FaDiscord, FaGamepad, FaGithub, FaTimes } from "react-icons/fa";
 
 import ErrorBoundary from "../components/ErrorBoundary";
-
-const Time = dynamic(() => import("../components/Time"), {
-    ssr: false,
-});
-
 export default function App({
     Component,
     pageProps: { session, ...pageProps },
@@ -46,7 +40,7 @@ export default function App({
                                         className="block rounded-md py-3 font-mono text-base no-underline transition-transform dark:hover:text-white sm:inline-block sm:rounded-full sm:bg-white/0 sm:px-5 sm:font-normal sm:hover:bg-neutral-900/5 dark:sm:hover:bg-white/10 md:text-xl"
                                         href="/"
                                     >
-                                        main page
+                                        uploader
                                     </a>
                                 </motion.li>
 
@@ -57,35 +51,9 @@ export default function App({
                                 >
                                     <a
                                         className="block rounded-md py-3 font-mono text-base no-underline transition-transform dark:hover:text-white sm:inline-block sm:rounded-full sm:bg-white/0 sm:px-5 sm:font-normal sm:hover:bg-neutral-900/5 dark:sm:hover:bg-white/10 md:text-xl"
-                                        href="/about"
+                                        href="/list"
                                     >
-                                        about
-                                    </a>
-                                </motion.li>
-
-                                <motion.li
-                                    whileHover={{ scale: 1.1 }}
-                                    whileTap={{ scale: 0.95 }}
-                                    className="shrink-0"
-                                >
-                                    <a
-                                        className="block rounded-md py-3 font-mono text-base no-underline transition-transform dark:hover:text-white sm:inline-block sm:rounded-full sm:bg-white/0 sm:px-5 sm:font-normal sm:hover:bg-neutral-900/5 dark:sm:hover:bg-white/10 md:text-xl"
-                                        href="/friends"
-                                    >
-                                        friends
-                                    </a>
-                                </motion.li>
-
-                                <motion.li
-                                    whileHover={{ scale: 1.1 }}
-                                    whileTap={{ scale: 0.95 }}
-                                    className="shrink-0"
-                                >
-                                    <a
-                                        className="block rounded-md py-3 font-mono text-base no-underline transition-transform dark:hover:text-white sm:inline-block sm:rounded-full sm:bg-white/0 sm:px-5 sm:font-normal sm:hover:bg-neutral-900/5 dark:sm:hover:bg-white/10 md:text-xl"
-                                        href="/blog"
-                                    >
-                                        blogs
+                                        list
                                     </a>
                                 </motion.li>
                             </ul>
@@ -99,11 +67,6 @@ export default function App({
                                 </button>
                             </div>
                         </nav>
-                        <div className="hidden md:flex">
-                            <div className="mt-0.5 inline-flex h-12 w-full select-none items-center space-x-2 rounded-sm text-right text-base no-underline opacity-50 hover:opacity-100 focus:opacity-100 focus:outline-none focus:ring sm:select-text md:text-xl">
-                                <Time />
-                            </div>
-                        </div>
                     </div>
                     <motion.div
                         initial={{ height: 0 }}
@@ -120,7 +83,7 @@ export default function App({
                                     className="block rounded-md bg-white/0 px-5 py-3 font-mono text-lg font-normal no-underline hover:bg-neutral-900/5 dark:hover:bg-white/10 dark:hover:text-white"
                                     href="/"
                                 >
-                                    main page
+                                    uploader
                                 </a>
                             </motion.li>
                             <motion.li
@@ -130,38 +93,11 @@ export default function App({
                             >
                                 <a
                                     className="block rounded-md bg-white/0 px-5 py-3 font-mono text-lg font-normal no-underline hover:bg-neutral-900/5 dark:hover:bg-white/10 dark:hover:text-white"
-                                    href="/about"
+                                    href="/list"
                                 >
-                                    about
+                                    list
                                 </a>
                             </motion.li>
-                            <motion.li
-                                whileHover={{ scale: 1.1 }}
-                                whileTap={{ scale: 0.95 }}
-                                className="shrink-0"
-                            >
-                                <a
-                                    className="block rounded-md bg-white/0 px-5 py-3 font-mono text-lg font-normal no-underline hover:bg-neutral-900/5 dark:hover:bg-white/10 dark:hover:text-white"
-                                    href="/friends"
-                                >
-                                    friends
-                                </a>
-                            </motion.li>
-                            <motion.li
-                                whileHover={{ scale: 1.1 }}
-                                whileTap={{ scale: 0.95 }}
-                                className="shrink-0"
-                            >
-                                <a
-                                    className="block rounded-md bg-white/0 px-5 py-3 font-mono text-lg font-normal no-underline hover:bg-neutral-900/5 dark:hover:bg-white/10 dark:hover:text-white"
-                                    href="/blog"
-                                >
-                                    blogs
-                                </a>
-                            </motion.li>
-                            <li className="mt-4 flex h-12 w-full select-none items-center justify-center space-x-2 rounded-sm text-right text-base no-underline opacity-50 hover:opacity-100 focus:opacity-100 focus:outline-none focus:ring sm:select-text md:text-xl">
-                                <Time />
-                            </li>
                         </ul>
                     </motion.div>
 
