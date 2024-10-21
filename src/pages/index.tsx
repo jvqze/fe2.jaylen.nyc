@@ -102,7 +102,8 @@ export default function Page(): JSX.Element {
             </Head>
 
             <main className="flex min-h-screen flex-col items-center justify-center p-6 text-white">
-                <h1 className="mb-6 text-center text-4xl font-extrabold">FE2 Audio Uploader</h1>
+                <h1 className="text-center text-4xl font-extrabold">FE2 Audio Uploader</h1>
+                <p className="mb-6 text-slate-300">Some ogg files will not play on some browsers, it's recommended to use mp3 files - Thanks Lucanos for Notice</p>
 
                 {session ? (
                     <div className="w-full max-w-md rounded-lg bg-neutral-800 p-6 shadow-xl">
