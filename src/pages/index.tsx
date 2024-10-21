@@ -9,6 +9,7 @@ export default function Page(): JSX.Element {
     const [uploadStatus, setUploadStatus] = useState<string>("");
     const [uploadedUrl, setUploadedUrl] = useState<string | null>(null);
     const [isCopied, setIsCopied] = useState<boolean>(false);
+    const [isUploading, setIsUploading] = useState<boolean>(false);
     const [title, setTitle] = useState<string>("");
 
     const sanitizeTitle = (input: string) => {
@@ -38,9 +39,11 @@ export default function Page(): JSX.Element {
         setUploadStatus("");
         setUploadedUrl(null);
         setIsCopied(false);
+        setIsUploading(true);
 
         if (!session) {
             setUploadStatus("You must be logged in to upload a file.");
+            setIsUploading(false);
             return;
         }
 
@@ -61,7 +64,14 @@ export default function Page(): JSX.Element {
                     credentials: "include",
                 });
             
-                const data = await res.json();
+                const contentType = res.headers.get("content-type");
+                
+                let data;
+                if (contentType && contentType.includes("application/json")) {
+                    data = await res.json();
+                } else {
+                    data = await res.text();
+                }
             
                 if (res.ok) {
                     setUploadStatus("File uploaded successfully.");
@@ -69,14 +79,16 @@ export default function Page(): JSX.Element {
                     setSelectedFile(null);
                     setTitle("");
                 } else {
-                    setUploadStatus(`${data.message || "Upload failed. Please try again."}`);
+                    setUploadStatus(`${data.message || data || "Upload failed. Please try again."}`);
                 }
             } catch (error) {
                 setUploadStatus(`Error uploading file: ${error instanceof Error ? error.message : "Unknown error"}`);
+            } finally {
+                setIsUploading(false);
             }
-            
         } else {
             setUploadStatus("Please select a file to upload.");
+            setIsUploading(false);
         }
     };
 
@@ -114,15 +126,6 @@ export default function Page(): JSX.Element {
                         </p>
 
                         <form onSubmit={handleSubmit} className="flex flex-col">
-                            {/* <input
-                                type="text"
-                                id="title"
-                                value={title}
-                                onChange={e => setTitle(e.target.value)}
-                                className="mb-4 rounded-md bg-zinc-900 p-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                placeholder="Enter title (optional)"
-                            /> */}
-
                             <label
                                 htmlFor="file-upload"
                                 className="mb-4 cursor-pointer rounded-lg border-2 border-dashed border-gray-600 p-4 text-center transition hover:bg-gray-700"
@@ -140,9 +143,17 @@ export default function Page(): JSX.Element {
                             />
                             <button
                                 type="submit"
-                                className="mb-2 mt-2 w-full rounded bg-green-500 px-4 py-2 text-white transition hover:bg-green-600"
+                                disabled={isUploading}
+                                className={`mb-2 mt-2 w-full rounded px-4 py-2 text-white transition ${isUploading ? "bg-green-700" : "bg-green-500 hover:bg-green-600"}`}
                             >
-                                Upload
+                                {isUploading ? (
+                                    <span className="flex items-center justify-center space-x-2">
+                                        <span className="loader"></span>
+                                        <span>Uploading...</span>
+                                    </span>
+                                ) : (
+                                    "Upload"
+                                )}
                             </button>
 
                             {uploadStatus && (
