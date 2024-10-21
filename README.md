@@ -58,7 +58,7 @@ Before setting up the project locally, ensure you have the following installed o
 2. Navigate to the project directory:
 
     ```bash
-    cd jaylen.nyc
+    cd fe2.jaylen.nyc
     ```
 
 3. Install the dependencies:
