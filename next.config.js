@@ -14,6 +14,11 @@ module.exports = {
         return config;
     },
     reactStrictMode: true,
+    experimental: {
+        serverActions: {
+          bodySizeLimit: '30mb',
+        },
+      },
     images: {
         domains: ["cdn.jaylen.nyc", "cdn.discordapp.com"],
     },
