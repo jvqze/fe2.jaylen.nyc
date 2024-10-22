@@ -119,15 +119,9 @@ export default function Page(): JSX.Element {
             </Head>
 
             <main className="flex min-h-screen flex-col items-center justify-center p-6 text-white">
+            <main className="flex min-h-screen flex-col items-center justify-center p-6 text-white bg-gray-900">
                 <h1 className="text-center text-4xl font-extrabold">FE2 Audio Uploader</h1>
-                <p className="mb-6 text-slate-300">
-                    Some ogg files will not play on some browsers, it's recommended to use mp3 files
-                    - Thanks Lucanos for Notice
-                </p>
-                <p className="mb-6 text-slate-300">
-                    Some ogg files may not play on all browsers; mp3 is recommended - Thanks Lucanos
-                    for the notice.
-                </p>
+                <p className="mb-6 text-slate-300">Some ogg files may not play on all browsers; mp3 is recommended - Thanks Lucanos for the notice.</p>
 
                 {session ? (
                     <div className="w-full max-w-md rounded-lg bg-neutral-800 p-6 shadow-xl">
@@ -160,7 +154,7 @@ export default function Page(): JSX.Element {
                                 {isUploading ? (
                                     <span className="flex items-center justify-center space-x-2">
                                         <span className="loader"></span>
-                                        <span className="loader h-5 w-5 animate-spin rounded-full border-4 border-green-300 border-t-transparent"></span>
+                                        <span className="loader border-4 border-t-transparent border-green-300 rounded-full w-5 h-5 animate-spin"></span>
                                         <span>Uploading...</span>
                                     </span>
                                 ) : (
