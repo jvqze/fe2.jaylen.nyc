@@ -63,16 +63,16 @@ export default function Page(): JSX.Element {
                     body: formData,
                     credentials: "include",
                 });
-            
+
                 const contentType = res.headers.get("content-type");
-                
+
                 let data;
                 if (contentType && contentType.includes("application/json")) {
                     data = await res.json();
                 } else {
                     data = await res.text();
                 }
-            
+
                 if (res.ok) {
                     setUploadStatus("File uploaded successfully.");
                     setUploadedUrl(data.audioLink);
@@ -114,9 +114,9 @@ export default function Page(): JSX.Element {
                 <title>FE2 | Audio Uploader</title>
             </Head>
 
-            <main className="flex min-h-screen flex-col items-center justify-center p-6 text-white">
+            <main className="flex min-h-screen flex-col items-center justify-center p-6 text-white bg-gray-900">
                 <h1 className="text-center text-4xl font-extrabold">FE2 Audio Uploader</h1>
-                <p className="mb-6 text-slate-300">Some ogg files will not play on some browsers, it's recommended to use mp3 files - Thanks Lucanos for Notice</p>
+                <p className="mb-6 text-slate-300">Some ogg files may not play on all browsers; mp3 is recommended - Thanks Lucanos for the notice.</p>
 
                 {session ? (
                     <div className="w-full max-w-md rounded-lg bg-neutral-800 p-6 shadow-xl">
@@ -128,7 +128,7 @@ export default function Page(): JSX.Element {
                         <form onSubmit={handleSubmit} className="flex flex-col">
                             <label
                                 htmlFor="file-upload"
-                                className="mb-4 cursor-pointer rounded-lg border-2 border-dashed border-gray-600 p-4 text-center transition hover:bg-gray-700"
+                                className="mb-4 cursor-pointer rounded-lg border-2 border-dashed border-gray-600 p-4 text-center transition hover:bg-gray-700 focus:ring-2 focus:ring-blue-500"
                             >
                                 {selectedFile
                                     ? selectedFile.name
@@ -148,7 +148,7 @@ export default function Page(): JSX.Element {
                             >
                                 {isUploading ? (
                                     <span className="flex items-center justify-center space-x-2">
-                                        <span className="loader"></span>
+                                        <span className="loader border-4 border-t-transparent border-green-300 rounded-full w-5 h-5 animate-spin"></span>
                                         <span>Uploading...</span>
                                     </span>
                                 ) : (
