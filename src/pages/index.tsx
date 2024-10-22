@@ -40,36 +40,31 @@ export default function Page(): JSX.Element {
         setUploadedUrl(null);
         setIsCopied(false);
         setIsUploading(true);
-    
+
         if (!session) {
             setUploadStatus("You must be logged in to upload a file.");
             setIsUploading(false);
             return;
         }
-    
+
         if (selectedFile) {
             const formData = new FormData();
             formData.append("file", selectedFile);
             const sanitizedTitle = title ? sanitizeTitle(title) : selectedFile.name;
             formData.append("title", sanitizedTitle);
-    
-            const payloadJson = JSON.stringify({
-                domain: "cdn.jaylen.nyc", // Tixte domain you're using
-                name: sanitizedTitle,
-            });
-            formData.append("payload_json", payloadJson);
-    
+
             try {
+                // Make the Tixte API request directly from the client-side
                 const response = await fetch("https://api.tixte.com/v1/upload", {
                     method: "POST",
                     headers: {
-                        Authorization: `${process.env.TIXTE_API_KEY}`,
+                        Authorization: `Bearer ${process.env.NEXT_PUBLIC_TIXTE_API_KEY}`, // Client-side key (replace with your actual API key)
                     },
                     body: formData,
                 });
-    
+
                 const data = await response.json();
-    
+
                 if (response.ok) {
                     setUploadStatus("File uploaded successfully.");
                     setUploadedUrl(data.data.direct_url);
