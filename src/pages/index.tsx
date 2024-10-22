@@ -40,49 +40,50 @@ export default function Page(): JSX.Element {
         setUploadedUrl(null);
         setIsCopied(false);
         setIsUploading(true);
-
+    
         if (!session) {
             setUploadStatus("You must be logged in to upload a file.");
             setIsUploading(false);
             return;
         }
-
+    
         if (selectedFile) {
             const formData = new FormData();
-            formData.append("audioFile", selectedFile);
-            formData.append("email", session.user?.email || "");
-
-            if (title) {
-                const sanitizedTitle = sanitizeTitle(title);
-                formData.append("title", sanitizedTitle);
-            }
-
+            formData.append("file", selectedFile);
+            const sanitizedTitle = title ? sanitizeTitle(title) : selectedFile.name;
+            formData.append("title", sanitizedTitle);
+    
+            const payloadJson = JSON.stringify({
+                domain: "cdn.jaylen.nyc", // Tixte domain you're using
+                name: sanitizedTitle,
+            });
+            formData.append("payload_json", payloadJson);
+    
             try {
-                const res = await fetch("/api/fe2/upload", {
+                const response = await fetch("https://api.tixte.com/v1/upload", {
                     method: "POST",
+                    headers: {
+                        Authorization: `${process.env.TIXTE_API_KEY}`,
+                    },
                     body: formData,
-                    credentials: "include",
                 });
-
-                const contentType = res.headers.get("content-type");
-
-                let data;
-                if (contentType && contentType.includes("application/json")) {
-                    data = await res.json();
-                } else {
-                    data = await res.text();
-                }
-
-                if (res.ok) {
+    
+                const data = await response.json();
+    
+                if (response.ok) {
                     setUploadStatus("File uploaded successfully.");
-                    setUploadedUrl(data.audioLink);
+                    setUploadedUrl(data.data.direct_url);
                     setSelectedFile(null);
                     setTitle("");
                 } else {
-                    setUploadStatus(`${data.message || data || "Upload failed. Please try again."}`);
+                    setUploadStatus(`${data.message || "Upload failed. Please try again."}`);
                 }
             } catch (error) {
-                setUploadStatus(`Error uploading file: ${error instanceof Error ? error.message : "Unknown error"}`);
+                if (error instanceof Error) {
+                    setUploadStatus(`Error uploading file: ${error.message}`);
+                } else {
+                    setUploadStatus("An unknown error occurred.");
+                }
             } finally {
                 setIsUploading(false);
             }
@@ -114,7 +115,7 @@ export default function Page(): JSX.Element {
                 <title>FE2 | Audio Uploader</title>
             </Head>
 
-            <main className="flex min-h-screen flex-col items-center justify-center p-6 text-white bg-gray-900">
+            <main className="flex min-h-screen flex-col items-center justify-center p-6 text-white">
                 <h1 className="text-center text-4xl font-extrabold">FE2 Audio Uploader</h1>
                 <p className="mb-6 text-slate-300">Some ogg files may not play on all browsers; mp3 is recommended - Thanks Lucanos for the notice.</p>
 
