@@ -49,36 +49,44 @@ export default function Page(): JSX.Element {
 
         if (selectedFile) {
             const formData = new FormData();
-            formData.append("file", selectedFile);
-            const sanitizedTitle = title ? sanitizeTitle(title) : selectedFile.name;
-            formData.append("title", sanitizedTitle);
+            formData.append("audioFile", selectedFile);
+            formData.append("email", session.user?.email || "");
+
+            if (title) {
+                const sanitizedTitle = sanitizeTitle(title);
+                formData.append("title", sanitizedTitle);
+            }
 
             try {
-                // Make the Tixte API request directly from the client-side
-                const response = await fetch("https://api.tixte.com/v1/upload", {
+                const res = await fetch("/api/fe2/upload", {
                     method: "POST",
-                    headers: {
-                        Authorization: `Bearer ${process.env.NEXT_PUBLIC_TIXTE_API_KEY}`, // Client-side key (replace with your actual API key)
-                    },
                     body: formData,
+                    credentials: "include",
                 });
 
-                const data = await response.json();
+                const contentType = res.headers.get("content-type");
 
-                if (response.ok) {
+                let data;
+                if (contentType && contentType.includes("application/json")) {
+                    data = await res.json();
+                } else {
+                    data = await res.text();
+                }
+
+                if (res.ok) {
                     setUploadStatus("File uploaded successfully.");
-                    setUploadedUrl(data.data.direct_url);
+                    setUploadedUrl(data.audioLink);
                     setSelectedFile(null);
                     setTitle("");
                 } else {
-                    setUploadStatus(`${data.message || "Upload failed. Please try again."}`);
+                    setUploadStatus(
+                        `${data.message || data || "Upload failed. Please try again."}`,
+                    );
                 }
             } catch (error) {
-                if (error instanceof Error) {
-                    setUploadStatus(`Error uploading file: ${error.message}`);
-                } else {
-                    setUploadStatus("An unknown error occurred.");
-                }
+                setUploadStatus(
+                    `Error uploading file: ${error instanceof Error ? error.message : "Unknown error"}`,
+                );
             } finally {
                 setIsUploading(false);
             }
@@ -112,7 +120,14 @@ export default function Page(): JSX.Element {
 
             <main className="flex min-h-screen flex-col items-center justify-center p-6 text-white">
                 <h1 className="text-center text-4xl font-extrabold">FE2 Audio Uploader</h1>
-                <p className="mb-6 text-slate-300">Some ogg files may not play on all browsers; mp3 is recommended - Thanks Lucanos for the notice.</p>
+                <p className="mb-6 text-slate-300">
+                    Some ogg files will not play on some browsers, it's recommended to use mp3 files
+                    - Thanks Lucanos for Notice
+                </p>
+                <p className="mb-6 text-slate-300">
+                    Some ogg files may not play on all browsers; mp3 is recommended - Thanks Lucanos
+                    for the notice.
+                </p>
 
                 {session ? (
                     <div className="w-full max-w-md rounded-lg bg-neutral-800 p-6 shadow-xl">
@@ -124,7 +139,7 @@ export default function Page(): JSX.Element {
                         <form onSubmit={handleSubmit} className="flex flex-col">
                             <label
                                 htmlFor="file-upload"
-                                className="mb-4 cursor-pointer rounded-lg border-2 border-dashed border-gray-600 p-4 text-center transition hover:bg-gray-700 focus:ring-2 focus:ring-blue-500"
+                                className="mb-4 cursor-pointer rounded-lg border-2 border-dashed border-gray-600 p-4 text-center transition hover:bg-gray-700"
                             >
                                 {selectedFile
                                     ? selectedFile.name
@@ -144,7 +159,8 @@ export default function Page(): JSX.Element {
                             >
                                 {isUploading ? (
                                     <span className="flex items-center justify-center space-x-2">
-                                        <span className="loader border-4 border-t-transparent border-green-300 rounded-full w-5 h-5 animate-spin"></span>
+                                        <span className="loader"></span>
+                                        <span className="loader h-5 w-5 animate-spin rounded-full border-4 border-green-300 border-t-transparent"></span>
                                         <span>Uploading...</span>
                                     </span>
                                 ) : (
