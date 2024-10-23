@@ -91,7 +91,7 @@ export default function Page(): JSX.Element {
                         setIsUploading(false);
                         return; // Stop the upload process if one chunk fails
                     }
-
+                    
                     setUploadStatus(
                         `Chunk ${chunkIndex + 1} of ${totalChunks} uploaded successfully.`,
                     );
