@@ -124,7 +124,7 @@ export default function Page(): JSX.Element {
 
     const saveMetadataToDatabase = async (fileUrl: string, fileName: string) => {
         try {
-            const res = await fetch("/api/save-file-metadata", {
+            const res = await fetch("/api/fe2/saveFile", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
