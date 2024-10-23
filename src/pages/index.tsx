@@ -2,8 +2,6 @@ import { signIn, signOut, useSession } from "next-auth/react";
 import Head from "next/head";
 import { ChangeEvent, useEffect, useState } from "react";
 import { FaCheckCircle, FaDiscord } from "react-icons/fa";
-import MongooseConnect from "../lib/MongooseConnect";
-
 export default function Page(): JSX.Element {
     const { data: session } = useSession();
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -49,7 +47,6 @@ export default function Page(): JSX.Element {
         }
     
         if (selectedFile) {
-            // Step 1: Get upload configuration from the server
             let tixteApiKey: string;
             try {
                 const response = await fetch("/api/fe2/getKey");
@@ -65,8 +62,7 @@ export default function Page(): JSX.Element {
                 setIsUploading(false);
                 return;
             }
-    
-            // Step 2: Perform upload directly to Tixte
+
             const formData = new FormData();    
             const payloadJson = JSON.stringify({
                 domain: "cdn.jaylen.nyc",

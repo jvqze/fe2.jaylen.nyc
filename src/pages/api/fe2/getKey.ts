@@ -4,7 +4,6 @@ import authOptions from "../auth/[...nextauth]";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   try {
-    // Get session to verify authentication
     const session = await getServerSession(req, res, authOptions);
     if (!session) {
       return res.status(401).json({ message: "Unauthorized" });
@@ -16,7 +15,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return res.status(500).json({ message: "Server error: Missing Tixte API key" });
     }
 
-    // Send back a response with the required token/configuration
     res.status(200).json({ tixteApiKey });
   } catch (error) {
     console.error("Error in pre-signed upload handler:", error);
