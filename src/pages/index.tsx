@@ -48,48 +48,68 @@ export default function Page(): JSX.Element {
         }
 
         if (selectedFile) {
-            const formData = new FormData();
-            formData.append("audioFile", selectedFile);
-            formData.append("email", session.user?.email || "");
+            const chunkSize = 5 * 1024 * 1024; // 5 MB per chunk
+            const totalChunks = Math.ceil(selectedFile.size / chunkSize);
 
-            if (title) {
-                const sanitizedTitle = sanitizeTitle(title);
-                formData.append("title", sanitizedTitle);
-            }
+            for (let chunkIndex = 0; chunkIndex < totalChunks; chunkIndex++) {
+                const start = chunkIndex * chunkSize;
+                const end = Math.min(selectedFile.size, start + chunkSize);
+                const chunk = selectedFile.slice(start, end);
 
-            try {
-                const res = await fetch("/api/fe2/upload", {
-                    method: "POST",
-                    body: formData,
-                    credentials: "include",
-                });
+                const formData = new FormData();
+                formData.append("chunk", chunk);
+                formData.append("chunkIndex", String(chunkIndex));
+                formData.append("totalChunks", String(totalChunks));
+                formData.append("fileName", selectedFile.name);
+                formData.append("email", session.user?.email || "");
 
-                const contentType = res.headers.get("content-type");
-
-                let data;
-                if (contentType && contentType.includes("application/json")) {
-                    data = await res.json();
-                } else {
-                    data = await res.text();
+                if (title) {
+                    const sanitizedTitle = sanitizeTitle(title);
+                    formData.append("title", sanitizedTitle);
                 }
 
-                if (res.ok) {
-                    setUploadStatus("File uploaded successfully.");
-                    setUploadedUrl(data.audioLink);
-                    setSelectedFile(null);
-                    setTitle("");
-                } else {
+                try {
+                    const res = await fetch("/api/fe2/upload", {
+                        method: "POST",
+                        body: formData,
+                        credentials: "include",
+                    });
+
+                    const contentType = res.headers.get("content-type");
+
+                    let data;
+                    if (contentType && contentType.includes("application/json")) {
+                        data = await res.json();
+                    } else {
+                        data = await res.text();
+                    }
+
+                    if (!res.ok) {
+                        setUploadStatus(
+                            `${data.message || data || "Upload failed. Please try again."}`,
+                        );
+                        setIsUploading(false);
+                        return; // Stop the upload process if one chunk fails
+                    }
+
                     setUploadStatus(
-                        `${data.message || data || "Upload failed. Please try again."}`,
+                        `Chunk ${chunkIndex + 1} of ${totalChunks} uploaded successfully.`,
                     );
+
+                    setUploadedUrl(data.audioLink);
+                } catch (error) {
+                    setUploadStatus(
+                        `Error uploading chunk ${chunkIndex + 1}: ${error instanceof Error ? error.message : "Unknown error"}`,
+                    );
+                    setIsUploading(false);
+                    return; // Stop the upload process if there's an error
                 }
-            } catch (error) {
-                setUploadStatus(
-                    `Error uploading file: ${error instanceof Error ? error.message : "Unknown error"}`,
-                );
-            } finally {
-                setIsUploading(false);
             }
+
+            setUploadStatus("File uploaded successfully.");
+            setIsUploading(false);
+            setSelectedFile(null);
+            setTitle("");
         } else {
             setUploadStatus("Please select a file to upload.");
             setIsUploading(false);
@@ -120,7 +140,10 @@ export default function Page(): JSX.Element {
 
             <main className="flex min-h-screen flex-col items-center justify-center p-6 text-white">
                 <h1 className="text-center text-4xl font-extrabold">FE2 Audio Uploader</h1>
-                <p className="mb-6 text-slate-300">Some ogg files may not play on all browsers; mp3 is recommended - Thanks Lucanos for the notice.</p>
+                <p className="mb-6 text-slate-300">
+                    Some ogg files may not play on all browsers; mp3 is recommended - Thanks Lucanos
+                    for the notice.
+                </p>
 
                 {session ? (
                     <div className="w-full max-w-md rounded-lg bg-neutral-800 p-6 shadow-xl">
@@ -153,7 +176,7 @@ export default function Page(): JSX.Element {
                                 {isUploading ? (
                                     <span className="flex items-center justify-center space-x-2">
                                         <span className="loader"></span>
-                                        <span className="loader border-4 border-t-transparent border-green-300 rounded-full w-5 h-5 animate-spin"></span>
+                                        <span className="loader h-5 w-5 animate-spin rounded-full border-4 border-green-300 border-t-transparent"></span>
                                         <span>Uploading...</span>
                                     </span>
                                 ) : (
