@@ -101,8 +101,7 @@ export default function Page(): JSX.Element {
     
                 const result = await res.json();
                 if (result.success) {
-                    setUploadedUrl(result.data.direct_url);
-                    setUploadStatus("File uploaded successfully.");
+                    setUploadStatus("File uploaded successfully. Awaiting Data saving...");
                     await saveMetadataToDatabase(result.data.direct_url, selectedFile.name);
                 } else {
                     setUploadStatus(result.error?.message || "Upload failed. Please try again.");
@@ -141,7 +140,8 @@ export default function Page(): JSX.Element {
                 throw new Error("Failed to save metadata to database");
             }
     
-            setUploadStatus("File metadata saved successfully.");
+            setUploadStatus("Saved Successfully!");
+            setUploadedUrl(fileUrl);
         } catch (error) {
             console.error("Error saving metadata:", error);
             setUploadStatus(
