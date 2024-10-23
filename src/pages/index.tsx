@@ -2,7 +2,6 @@ import { signIn, signOut, useSession } from "next-auth/react";
 import Head from "next/head";
 import { ChangeEvent, useEffect, useState } from "react";
 import { FaCheckCircle, FaDiscord } from "react-icons/fa";
-
 export default function Page(): JSX.Element {
     const { data: session } = useSession();
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -40,61 +39,113 @@ export default function Page(): JSX.Element {
         setUploadedUrl(null);
         setIsCopied(false);
         setIsUploading(true);
-
+    
         if (!session) {
             setUploadStatus("You must be logged in to upload a file.");
             setIsUploading(false);
             return;
         }
-
+    
         if (selectedFile) {
-            const formData = new FormData();
-            formData.append("audioFile", selectedFile);
-            formData.append("email", session.user?.email || "");
-
-            if (title) {
-                const sanitizedTitle = sanitizeTitle(title);
-                formData.append("title", sanitizedTitle);
+            let tixteApiKey: string;
+            try {
+                const response = await fetch("/api/fe2/getKey");
+                if (!response.ok) {
+                    throw new Error("Failed to get Tixte API key");
+                }
+                const { tixteApiKey: apiKey } = await response.json();
+                tixteApiKey = apiKey;
+            } catch (error) {
+                setUploadStatus(
+                    `Error fetching upload configuration: ${error instanceof Error ? error.message : "Unknown error"}`
+                );
+                setIsUploading(false);
+                return;
             }
 
+            const formData = new FormData();    
+            const payloadJson = JSON.stringify({
+                domain: "cdn.jaylen.nyc",
+                name: selectedFile.name,
+            });
+            formData.append("payload_json", payloadJson);
+            formData.append("file", selectedFile);
+    
             try {
-                const res = await fetch("/api/fe2/upload", {
+                const res = await fetch("https://api.tixte.com/v1/upload", {
                     method: "POST",
+                    headers: {
+                        Authorization: tixteApiKey,
+                    },
                     body: formData,
-                    credentials: "include",
                 });
-
-                const contentType = res.headers.get("content-type");
-
-                let data;
-                if (contentType && contentType.includes("application/json")) {
-                    data = await res.json();
-                } else {
-                    data = await res.text();
-                }
-
-                if (res.ok) {
-                    setUploadStatus("File uploaded successfully.");
-                    setUploadedUrl(data.audioLink);
-                    setSelectedFile(null);
-                    setTitle("");
-                } else {
+    
+                if (!res.ok) {
+                    const contentType = res.headers.get("content-type");
+                    let data;
+                    if (contentType && contentType.includes("application/json")) {
+                        data = await res.json();
+                    } else {
+                        data = await res.text();
+                    }
                     setUploadStatus(
-                        `${data.message || data || "Upload failed. Please try again."}`,
+                        `${data.message || data || "Upload failed. Please try again."}`
                     );
+                    setIsUploading(false);
+                    return;
+                }
+    
+                const result = await res.json();
+                if (result.success) {
+                    setUploadStatus("File uploaded successfully. Awaiting Data saving...");
+                    await saveMetadataToDatabase(result.data.direct_url, selectedFile.name);
+                } else {
+                    setUploadStatus(result.error?.message || "Upload failed. Please try again.");
                 }
             } catch (error) {
                 setUploadStatus(
-                    `Error uploading file: ${error instanceof Error ? error.message : "Unknown error"}`,
+                    `Error uploading file: ${error instanceof Error ? error.message : "Unknown error"}`
                 );
             } finally {
                 setIsUploading(false);
+                setSelectedFile(null);
+                setTitle("");
             }
         } else {
             setUploadStatus("Please select a file to upload.");
             setIsUploading(false);
         }
     };
+
+    const saveMetadataToDatabase = async (fileUrl: string, fileName: string) => {
+        try {
+            const res = await fetch("/api/fe2/saveFile", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    email: session?.user?.email,
+                    audioLink: fileUrl,
+                    title: fileName,
+                    createdAt: new Date(),
+                }),
+            });
+    
+            if (!res.ok) {
+                throw new Error("Failed to save metadata to database");
+            }
+    
+            setUploadStatus("Saved Successfully!");
+            setUploadedUrl(fileUrl);
+        } catch (error) {
+            console.error("Error saving metadata:", error);
+            setUploadStatus(
+                `Error saving file metadata: ${error instanceof Error ? error.message : "Unknown error"}`
+            );
+        }
+    };
+    
 
     const handleCopyToClipboard = () => {
         if (uploadedUrl) {
@@ -120,7 +171,10 @@ export default function Page(): JSX.Element {
 
             <main className="flex min-h-screen flex-col items-center justify-center p-6 text-white">
                 <h1 className="text-center text-4xl font-extrabold">FE2 Audio Uploader</h1>
-                <p className="mb-6 text-slate-300">Some ogg files may not play on all browsers; mp3 is recommended - Thanks Lucanos for the notice.</p>
+                <p className="mb-6 text-slate-300">
+                    Some ogg files may not play on all browsers; mp3 is recommended - Thanks Lucanos
+                    for the notice.
+                </p>
 
                 {session ? (
                     <div className="w-full max-w-md rounded-lg bg-neutral-800 p-6 shadow-xl">
@@ -153,7 +207,7 @@ export default function Page(): JSX.Element {
                                 {isUploading ? (
                                     <span className="flex items-center justify-center space-x-2">
                                         <span className="loader"></span>
-                                        <span className="loader border-4 border-t-transparent border-green-300 rounded-full w-5 h-5 animate-spin"></span>
+                                        <span className="loader h-5 w-5 animate-spin rounded-full border-4 border-green-300 border-t-transparent"></span>
                                         <span>Uploading...</span>
                                     </span>
                                 ) : (
