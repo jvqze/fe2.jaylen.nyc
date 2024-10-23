@@ -103,6 +103,7 @@ export default function Page(): JSX.Element {
                 if (result.success) {
                     setUploadedUrl(result.data.direct_url);
                     setUploadStatus("File uploaded successfully.");
+                    await saveMetadataToDatabase(result.data.direct_url, selectedFile.name);
                 } else {
                     setUploadStatus(result.error?.message || "Upload failed. Please try again.");
                 }
@@ -119,7 +120,35 @@ export default function Page(): JSX.Element {
             setUploadStatus("Please select a file to upload.");
             setIsUploading(false);
         }
-    };    
+    };
+
+    const saveMetadataToDatabase = async (fileUrl: string, fileName: string) => {
+        try {
+            const res = await fetch("/api/save-file-metadata", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    email: session?.user?.email,
+                    audioLink: fileUrl,
+                    title: fileName,
+                    createdAt: new Date(),
+                }),
+            });
+    
+            if (!res.ok) {
+                throw new Error("Failed to save metadata to database");
+            }
+    
+            setUploadStatus("File metadata saved successfully.");
+        } catch (error) {
+            console.error("Error saving metadata:", error);
+            setUploadStatus(
+                `Error saving file metadata: ${error instanceof Error ? error.message : "Unknown error"}`
+            );
+        }
+    };
     
 
     const handleCopyToClipboard = () => {
@@ -136,19 +165,6 @@ export default function Page(): JSX.Element {
             const timer = setTimeout(() => setIsCopied(false), 3000);
             return () => clearTimeout(timer);
         }
-
-        const DBConnect = async () => {
-            try {
-                await MongooseConnect();
-                console.log("Connected to MongoDB successfully.");
-            } catch (error) {
-                console.error("Error connecting to MongoDB:", error);
-                setUploadStatus("Database connection failed.");
-            }
-        };
-
-        DBConnect();
-
     }, [isCopied]);
 
     return (
