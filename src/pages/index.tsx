@@ -2,6 +2,7 @@ import { signIn, signOut, useSession } from "next-auth/react";
 import Head from "next/head";
 import { ChangeEvent, useEffect, useState } from "react";
 import { FaCheckCircle, FaDiscord } from "react-icons/fa";
+import MongooseConnect from "../lib/MongooseConnect";
 
 export default function Page(): JSX.Element {
     const { data: session } = useSession();
@@ -40,81 +41,86 @@ export default function Page(): JSX.Element {
         setUploadedUrl(null);
         setIsCopied(false);
         setIsUploading(true);
-
+    
         if (!session) {
             setUploadStatus("You must be logged in to upload a file.");
             setIsUploading(false);
             return;
         }
-
+    
         if (selectedFile) {
-            const chunkSize = 5 * 1024 * 1024; // 5 MB per chunk
-            const totalChunks = Math.ceil(selectedFile.size / chunkSize);
-
-            for (let chunkIndex = 0; chunkIndex < totalChunks; chunkIndex++) {
-                const start = chunkIndex * chunkSize;
-                const end = Math.min(selectedFile.size, start + chunkSize);
-                const chunk = selectedFile.slice(start, end);
-
-                const formData = new FormData();
-                formData.append("chunk", chunk);
-                formData.append("chunkIndex", String(chunkIndex));
-                formData.append("totalChunks", String(totalChunks));
-                formData.append("fileName", selectedFile.name);
-                formData.append("email", session.user?.email || "");
-
-                if (title) {
-                    const sanitizedTitle = sanitizeTitle(title);
-                    formData.append("title", sanitizedTitle);
+            // Step 1: Get upload configuration from the server
+            let tixteApiKey: string;
+            try {
+                const response = await fetch("/api/fe2/getKey");
+                if (!response.ok) {
+                    throw new Error("Failed to get Tixte API key");
                 }
-
-                try {
-                    const res = await fetch("/api/fe2/upload", {
-                        method: "POST",
-                        body: formData,
-                        credentials: "include",
-                    });
-
+                const { tixteApiKey: apiKey } = await response.json();
+                tixteApiKey = apiKey;
+            } catch (error) {
+                setUploadStatus(
+                    `Error fetching upload configuration: ${error instanceof Error ? error.message : "Unknown error"}`
+                );
+                setIsUploading(false);
+                return;
+            }
+    
+            // Step 2: Perform upload directly to Tixte
+            const formData = new FormData();    
+            const payloadJson = JSON.stringify({
+                domain: "cdn.jaylen.nyc",
+                name: selectedFile.name,
+            });
+            formData.append("payload_json", payloadJson);
+            formData.append("file", selectedFile);
+    
+            try {
+                const res = await fetch("https://api.tixte.com/v1/upload", {
+                    method: "POST",
+                    headers: {
+                        Authorization: tixteApiKey,
+                    },
+                    body: formData,
+                });
+    
+                if (!res.ok) {
                     const contentType = res.headers.get("content-type");
-
                     let data;
                     if (contentType && contentType.includes("application/json")) {
                         data = await res.json();
                     } else {
                         data = await res.text();
                     }
-
-                    if (!res.ok) {
-                        setUploadStatus(
-                            `${data.message || data || "Upload failed. Please try again."}`,
-                        );
-                        setIsUploading(false);
-                        return; // Stop the upload process if one chunk fails
-                    }
-                    
                     setUploadStatus(
-                        `Chunk ${chunkIndex + 1} of ${totalChunks} uploaded successfully.`,
-                    );
-
-                    setUploadedUrl(data.audioLink);
-                } catch (error) {
-                    setUploadStatus(
-                        `Error uploading chunk ${chunkIndex + 1}: ${error instanceof Error ? error.message : "Unknown error"}`,
+                        `${data.message || data || "Upload failed. Please try again."}`
                     );
                     setIsUploading(false);
-                    return; // Stop the upload process if there's an error
+                    return;
                 }
+    
+                const result = await res.json();
+                if (result.success) {
+                    setUploadedUrl(result.data.direct_url);
+                    setUploadStatus("File uploaded successfully.");
+                } else {
+                    setUploadStatus(result.error?.message || "Upload failed. Please try again.");
+                }
+            } catch (error) {
+                setUploadStatus(
+                    `Error uploading file: ${error instanceof Error ? error.message : "Unknown error"}`
+                );
+            } finally {
+                setIsUploading(false);
+                setSelectedFile(null);
+                setTitle("");
             }
-
-            setUploadStatus("File uploaded successfully.");
-            setIsUploading(false);
-            setSelectedFile(null);
-            setTitle("");
         } else {
             setUploadStatus("Please select a file to upload.");
             setIsUploading(false);
         }
-    };
+    };    
+    
 
     const handleCopyToClipboard = () => {
         if (uploadedUrl) {
@@ -130,6 +136,19 @@ export default function Page(): JSX.Element {
             const timer = setTimeout(() => setIsCopied(false), 3000);
             return () => clearTimeout(timer);
         }
+
+        const DBConnect = async () => {
+            try {
+                await MongooseConnect();
+                console.log("Connected to MongoDB successfully.");
+            } catch (error) {
+                console.error("Error connecting to MongoDB:", error);
+                setUploadStatus("Database connection failed.");
+            }
+        };
+
+        DBConnect();
+
     }, [isCopied]);
 
     return (

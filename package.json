@@ -50,7 +50,7 @@
         "@types/request-ip": "^0.0.41",
         "@types/uuid": "^10.0.0",
         "autoprefixer": "10.4.20",
-        "next": "^14.2.14",
+        "next": "^15.0.1",
         "postcss": "^8.4.35",
         "prettier": "^3.2.5",
         "prettier-plugin-sort-json": "^4.0.0",
