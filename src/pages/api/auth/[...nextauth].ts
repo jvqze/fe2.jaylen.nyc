@@ -9,14 +9,20 @@ export const authOptions: NextAuthOptions = {
         }),
     ],
     callbacks: {
-        async jwt({ token, account }) {
+        async jwt({ token, account, profile }) {
             if (account) {
                 token.email = account.providerAccountId;
+                token.name = profile?.username;
+                token.picture = profile?.avatar
+                    ? `https://cdn.discordapp.com/avatars/${account.providerAccountId}/${profile.avatar}.png`
+                    : null;
             }
             return token;
         },
         async session({ session, token }) {
             session.user.email = token.email as string;
+            session.user.name = token.name as string;
+            session.user.image = token.picture as string;
             return session;
         },
     },

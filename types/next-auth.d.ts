@@ -1,14 +1,17 @@
-import { DefaultSession, DefaultUser, JWT } from "next-auth";
+import NextAuth, { DefaultUser, JWT, Profile } from "next-auth";
 
 declare module "next-auth" {
     interface Session {
         user: {
+            name?: string;
             email?: string;
-        } & DefaultSession["user"];
+            image?: string;
+        };
     }
 
-    interface User extends DefaultUser {
-        email?: string;
+    interface Profile {
+        avatar?: string;
+        username?: string;
     }
 }
 
@@ -17,3 +20,5 @@ declare module "next-auth/jwt" {
         email?: string;
     }
 }
+
+declare module "formidable";

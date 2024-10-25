@@ -5,7 +5,7 @@ This project is an **open-source tool** designed for users who want to upload cu
 ## Features
 
 -   **Audio Uploader**: Upload `.mp3` or `.ogg` files to use in your FE2 maps.
--   **List Page**: View a list of all your uploaded audio files, with direct links to each file.
+-   **List Page **NEW\***\*: View a list of all your uploaded audio files, with direct links to each file. **List page is now under the main page!\*\*
 -   **Discord Integration**: Log in with your Discord account to track your uploads.
 -   **Open Source**: This project is open source, meaning you can clone, modify, or contribute to it.
 
@@ -14,7 +14,6 @@ This project is an **open-source tool** designed for users who want to upload cu
 While the project is open-source, the live version of this uploader can be accessed by anyone at:
 
 -   **FE2 Audio Uploader**: <https://fe2.jaylen.nyc/>
--   **List Page**: <https://fe2.jaylen.nyc/list>
 
 > **Note**: You will need to log in with your Discord account to use the uploader and view your files.
 

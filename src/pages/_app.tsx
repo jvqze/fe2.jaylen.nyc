@@ -28,8 +28,9 @@ export default function App({
     return (
         <SessionProvider session={session}>
             <ErrorBoundary>
-                <div className="mx-auto flex min-h-screen max-w-4xl flex-col bg-ThemeDark">
-                    <div className="flex items-center justify-between">
+                <div className="mx-auto bg-ThemeDark">
+                    {/*<div className="flex items-center justify-between">
+                        
                         <nav className="flex-1">
                             <ul className="hidden space-x-4 px-5 py-10 md:flex">
                                 <motion.li
@@ -100,7 +101,7 @@ export default function App({
                                 </a>
                             </motion.li>
                         </ul>
-                    </motion.div>
+                    </motion.div>*/}
 
                     <div>
                         <Component {...pageProps} />

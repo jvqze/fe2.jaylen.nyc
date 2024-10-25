@@ -16,27 +16,16 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                 }
 
                 const files = await AudioFileModel.find({ email });
-                return res
-                    .status(200)
-                    .json(files.map(file => ({ name: file.name, link: file.audioLink })));
+                return res.status(200).json(
+                    files.map(file => ({
+                        name: file.title,
+                        link: file.audioLink,
+                        createdAt: file.createdAt,
+                    })),
+                );
             } catch (error) {
                 console.error("Error fetching files:", error);
                 return res.status(500).json({ message: "Error fetching files." });
-            }
-
-        case "POST":
-            try {
-                const { email, audioLink, name } = req.body;
-                if (!email || !audioLink || !name) {
-                    return res.status(400).json({ message: "Missing required fields." });
-                }
-
-                const newAudioFile = new AudioFileModel({ email, audioLink, name });
-                await newAudioFile.save();
-                return res.status(201).json({ message: "File saved successfully." });
-            } catch (error) {
-                console.error("Error saving file:", error);
-                return res.status(500).json({ message: "Error saving file." });
             }
 
         default:
