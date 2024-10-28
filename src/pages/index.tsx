@@ -212,7 +212,7 @@ export default function Page(): JSX.Element {
                                 className="flex items-center justify-center space-x-3 rounded bg-blue-600 px-5 py-3 text-lg text-white shadow-lg transition hover:bg-blue-700"
                             >
                                 <FaDiscord size={20} />
-                                <span>Sign in with Discord</span>
+                                <span>Authorize with Discord</span>
                             </button>
                         </div>
                     )}
