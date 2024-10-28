@@ -8,7 +8,6 @@ import {
     FaSearch,
     FaTrashAlt,
     FaUpload,
-    FaUser,
 } from "react-icons/fa";
 
 const uploadDomain = "cdn.jaylen.nyc";

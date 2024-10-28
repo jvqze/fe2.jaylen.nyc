@@ -1,7 +1,7 @@
 import { NextApiRequest, NextApiResponse } from "next";
 
-import MongooseConnect from "../../../lib/MongooseConnect";
-import AudioFileModel from "../../../models/AudioFile";
+import MongooseConnect from "../../lib/MongooseConnect";
+import AudioFileModel from "../../models/AudioFile";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     if (req.method !== "POST") {
@@ -9,7 +9,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
 
     await MongooseConnect();
-
     const { email, audioLink, title, createdAt } = req.body;
 
     try {
