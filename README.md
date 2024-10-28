@@ -6,7 +6,7 @@ This project is an **open-source tool** designed for users who want to upload cu
 
 -   **Audio Uploader**: Upload `.mp3` or `.ogg` files to use in your FE2 maps.
 -   **List Page __NEW__**: View a list of all your uploaded audio files, with direct links to each file. **List page is now under the main page!**
--   **Discord Integration**: Log in with your Discord account to track your uploads.
+-   **Discord Integration**: Authorize with your Discord account to track your uploads.
 -   **Open Source**: This project is open source, meaning you can clone, modify, or contribute to it.
 
 ## Live Version
@@ -27,7 +27,7 @@ While the project is open-source, the live version of this uploader can be acces
 ### 2. List Page
 
 -   The list page allows you to see all the audio files you've uploaded, complete with direct links for easy access.
--   The list is tied to your Discord account, so only you can see the files you've uploaded.
+-   The list is tied to your Discord Account ID, so only you can see the files you've uploaded.
 
 ## Open-Source Contributions
 
@@ -103,7 +103,7 @@ Before setting up the project locally, ensure you have the following installed o
 -   **Framer Motion**: A React animation library.
 -   **NextAuth.js**: Authentication for Next.js.
 -   **MongoDB**: Used for storing uploaded file information.
--   **Discord OAuth**: Used for logging in and tracking user uploads.
+-   **Discord OAuth**: Used for Authorizing and tracking user uploads.
 -   [**Tixte**](https://tixte.com): Used to store files of users uploads!
 
 ## Contact
