@@ -6,11 +6,12 @@ import {
     FaCopy,
     FaDiscord,
     FaSearch,
-    FaSignOutAlt,
     FaTrashAlt,
     FaUpload,
     FaUser,
 } from "react-icons/fa";
+
+const uploadDomain = "cdn.jaylen.nyc";
 
 function Notification({ message, type }: { message: string; type: "success" | "error" | "info" }) {
     const backgroundColor =
@@ -26,9 +27,7 @@ function Notification({ message, type }: { message: string; type: "success" | "e
 }
 
 export default function Page(): JSX.Element {
-    const { data: session, status } = useSession();
-    const [uploadStatus, setUploadStatus] = useState<string>("");
-    const [uploadedUrl, setUploadedUrl] = useState<string | null>(null);
+    const { data: session } = useSession();
     const [isCopied, setIsCopied] = useState<{ [key: string]: boolean }>({});
     const [isUploading, setIsUploading] = useState<boolean>(false);
     const [uploadedFiles, setUploadedFiles] = useState<
@@ -52,12 +51,9 @@ export default function Page(): JSX.Element {
             return;
         }
 
-        setUploadStatus("");
         setIsUploading(true);
-        setUploadedUrl(null);
 
         if (!session) {
-            setUploadStatus("You must be logged in to upload a file.");
             setNotification({ message: "You must be logged in to upload a file.", type: "error" });
             setIsUploading(false);
             return;
@@ -65,16 +61,13 @@ export default function Page(): JSX.Element {
 
         let tixteApiKey: string;
         try {
-            const response = await fetch("/api/fe2/getKey");
+            const response = await fetch("/api/getKey");
             if (!response.ok) {
                 throw new Error("Failed to get Tixte API key");
             }
             const { tixteApiKey: apiKey } = await response.json();
             tixteApiKey = apiKey;
         } catch (error) {
-            setUploadStatus(
-                `Error fetching upload configuration: ${error instanceof Error ? error.message : "Unknown error"}`,
-            );
             setNotification({ message: "Error fetching upload configuration.", type: "error" });
             setIsUploading(false);
             return;
@@ -82,7 +75,7 @@ export default function Page(): JSX.Element {
 
         const formData = new FormData();
         const payloadJson = JSON.stringify({
-            domain: "cdn.jaylen.nyc",
+            domain: uploadDomain,
             name: file.name,
         });
         formData.append("payload_json", payloadJson);
@@ -105,7 +98,6 @@ export default function Page(): JSX.Element {
                 } else {
                     data = await res.text();
                 }
-                setUploadStatus(`${data.message || data || "Upload failed. Please try again."}`);
                 setNotification({ message: "Upload failed. Please try again.", type: "error" });
                 setIsUploading(false);
                 return;
@@ -113,19 +105,15 @@ export default function Page(): JSX.Element {
 
             const result = await res.json();
             if (result.success) {
-                setUploadStatus("File uploaded successfully. Awaiting Data saving...");
+                console.log(result);
                 setNotification({ message: "File uploaded successfully!", type: "success" });
                 await saveToMongoose(result.data.direct_url, file.name);
                 navigator.clipboard.writeText(result.data.direct_url);
                 setNotification({ message: "URL copied to clipboard!", type: "success" });
             } else {
-                setUploadStatus(result.error?.message || "Upload failed. Please try again.");
                 setNotification({ message: "Upload failed. Please try again.", type: "error" });
             }
         } catch (error) {
-            setUploadStatus(
-                `Error uploading file: ${error instanceof Error ? error.message : "Unknown error"}`,
-            );
             setNotification({ message: "Error uploading file.", type: "error" });
         } finally {
             setIsUploading(false);
@@ -134,7 +122,7 @@ export default function Page(): JSX.Element {
 
     const saveToMongoose = async (fileUrl: string, fileName: string) => {
         try {
-            const res = await fetch("/api/fe2/saveFile", {
+            const res = await fetch("/api/saveFile", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -150,22 +138,19 @@ export default function Page(): JSX.Element {
             if (!res.ok) {
                 throw new Error("Failed to save file to database");
             }
-
-            setUploadStatus("Saved Successfully!");
-            setUploadedUrl(fileUrl);
             fetchUploadedFiles();
         } catch (error) {
-            setUploadStatus(
-                `Error saving file metadata: ${error instanceof Error ? error.message : "Unknown error"}`,
-            );
-            setNotification({ message: "Error saving file metadata.", type: "error" });
+            setNotification({
+                message: "We ran into some problem saving it to database. Please report to Jaylen!",
+                type: "error",
+            });
         }
     };
 
     const fetchUploadedFiles = async () => {
         if (session) {
             try {
-                const res = await fetch(`/api/fe2/getFiles?email=${session.user?.email}`);
+                const res = await fetch(`/api/getFiles?email=${session.user?.email}`);
                 if (res.ok) {
                     const files = await res.json();
                     setUploadedFiles(files);
@@ -209,14 +194,13 @@ export default function Page(): JSX.Element {
                         <div className="relative">
                             <button
                                 onClick={() => signOut()}
-                                className="flex items-center space-x-2 rounded-xl bg-neutral-800 p-2 shadow-lg"
+                                className="rounded-xl bg-neutral-800 p-2 shadow-lg"
                             >
-                                <FaUser size={20} />
                                 {session.user?.image && (
                                     <img
                                         src={session.user.image}
                                         alt="User Avatar"
-                                        className="h-10 w-10 rounded-full border-2"
+                                        className="h-11 w-11 rounded-full border-2"
                                     />
                                 )}
                             </button>
@@ -309,7 +293,6 @@ export default function Page(): JSX.Element {
                                                         )}
                                                     </button>
 
-                                                    {/* Delete Button (Disabled) */}
                                                     <button
                                                         disabled
                                                         className="cursor-not-allowed rounded bg-red-900 p-2 opacity-50"
@@ -329,6 +312,12 @@ export default function Page(): JSX.Element {
                         </div>
                     </>
                 )}
+
+                <p>
+                    Please note that .ogg Files will mostly not work; it is recommended to use
+                    .mp3! <span className="text-[#94cfff]">Microsoft Edge</span> will not work to listen due to it
+                    not accepting the music data from Tixte.
+                </p>
 
                 {notification && (
                     <Notification message={notification.message} type={notification.type} />
