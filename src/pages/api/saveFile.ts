@@ -10,8 +10,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     await MongooseConnect();
     const { userid, audioLink, title, createdAt } = req.body;
-    console.log("Received userID:", userid);
-
     if (typeof userid !== "string") {
         return res.status(400).json({ message: "Invalid userID format" });
     }
