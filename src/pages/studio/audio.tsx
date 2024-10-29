@@ -135,12 +135,6 @@ export default function AudioStudio() {
                 <p className="mb-4 text-sm text-gray-400">
                     Please authorize with Discord to continue.
                 </p>
-                <button
-                    onClick={() => signIn("discord")}
-                    className="mt-4 rounded-lg bg-blue-600 px-5 py-3 text-lg font-semibold text-white shadow-lg transition hover:bg-blue-700"
-                >
-                    Authorize with Discord
-                </button>
             </div>
         );
     }
