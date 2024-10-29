@@ -128,13 +128,13 @@ export default function Page(): JSX.Element {
                     "Content-Type": "application/json",
                 },
                 body: JSON.stringify({
-                    email: session?.user?.email,
+                    userid: session?.user?.email, // auth is a weirdo and made the email the userid
                     audioLink: fileUrl,
                     title: fileName,
                     createdAt: new Date(),
                 }),
             });
-
+    
             if (!res.ok) {
                 throw new Error("Failed to save file to database");
             }
@@ -146,14 +146,21 @@ export default function Page(): JSX.Element {
             });
         }
     };
-
+    
+    
     const fetchUploadedFiles = async () => {
         if (session) {
             try {
-                const res = await fetch(`/api/getFiles?email=${session.user?.email}`);
+                const res = await fetch(`/api/getFiles?userid=${session.user?.email}`);
                 if (res.ok) {
                     const files = await res.json();
-                    setUploadedFiles(files);
+                    setUploadedFiles(
+                        files.map((file: { name: string; link: string; createdAt: string }) => ({
+                            name: file.name,
+                            link: file.link,
+                            createdAt: file.createdAt,
+                        }))
+                    );
                 } else {
                     console.error("Error fetching uploaded files:", res.statusText);
                 }
@@ -162,7 +169,8 @@ export default function Page(): JSX.Element {
             }
         }
     };
-
+    
+    
     useEffect(() => {
         if (session) {
             fetchUploadedFiles();
@@ -279,10 +287,7 @@ export default function Page(): JSX.Element {
                                                     <source src={file.link} type="audio/mpeg" />
                                                     Your browser does not support the audio element.
                                                 </audio>
-
-                                                {/* Action buttons */}
                                                 <div className="absolute right-4 top-4 flex space-x-2 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
-                                                    {/* Copy Button */}
                                                     <button
                                                         onClick={() =>
                                                             handleCopyToClipboard(file.link, index)

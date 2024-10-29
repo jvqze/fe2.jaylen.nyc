@@ -1,7 +1,7 @@
 import { signIn, useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
-import { FaCopy, FaCheckCircle } from "react-icons/fa";
+import { FaCheckCircle, FaCopy } from "react-icons/fa";
 
 export default function AudioStudio() {
     const { data: session, status } = useSession();
@@ -96,7 +96,7 @@ export default function AudioStudio() {
                         "Content-Type": "application/json",
                     },
                     body: JSON.stringify({
-                        email: session?.user?.email,
+                        userid: session?.user?.email,
                         audioLink: trimmedAudioLink,
                         title: audioFile.name,
                         createdAt: new Date(),
@@ -174,7 +174,7 @@ export default function AudioStudio() {
                                 value={startTime}
                                 min="0"
                                 max={endTime || 0}
-                                onChange={(e) => setStartTime(parseFloat(e.target.value) || 0)}
+                                onChange={e => setStartTime(parseFloat(e.target.value) || 0)}
                             />
                         </div>
 
@@ -189,7 +189,7 @@ export default function AudioStudio() {
                                 className="w-20 rounded bg-gray-800 p-2 text-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-600"
                                 value={endTime ?? ""}
                                 min={startTime}
-                                onChange={(e) => setEndTime(parseFloat(e.target.value) || null)}
+                                onChange={e => setEndTime(parseFloat(e.target.value) || null)}
                             />
                         </div>
 
@@ -227,14 +227,14 @@ export default function AudioStudio() {
                     )}
 
                     {uploadedAudioUrl && (
-                        <div className="mt-8 w-full max-w-md p-4 bg-gray-800 rounded-lg shadow-md">
+                        <div className="mt-8 w-full max-w-md rounded-lg bg-gray-800 p-4 shadow-md">
                             <h3 className="mb-2 text-gray-200">Uploaded Audio</h3>
-                            <p className="text-sm text-blue-400 underline break-all">
+                            <p className="break-all text-sm text-blue-400 underline">
                                 {uploadedAudioUrl}
                             </p>
                             <button
                                 onClick={handleCopyToClipboard}
-                                className={`mt-2 flex items-center justify-center rounded-lg py-2 px-4 font-semibold ${
+                                className={`mt-2 flex items-center justify-center rounded-lg px-4 py-2 font-semibold ${
                                     isCopied ? "bg-green-600" : "bg-gray-700 hover:bg-gray-600"
                                 } text-white transition`}
                             >

@@ -1,7 +1,6 @@
 import { NextApiRequest, NextApiResponse } from "next";
-
 import MongooseConnect from "../../lib/MongooseConnect";
-import AudioFileModel from "../../models/AudioFile";
+import userProfileModel from "../../models/UserProfile";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     if (req.method !== "POST") {
@@ -9,19 +8,30 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
 
     await MongooseConnect();
-    const { email, audioLink, title, createdAt } = req.body;
+    const { userid, audioLink, title, createdAt } = req.body;
+    console.log("Received userID:", userid);
+
+    if (typeof userid !== "string") {
+        return res.status(400).json({ message: "Invalid userID format" });
+    }
 
     try {
-        const newAudioFile = new AudioFileModel({
-            email,
-            audioLink,
-            title,
-            createdAt,
-        });
+        const userProfile = await userProfileModel.findOneAndUpdate(
+            { userID: userid },  // Ensure userID is used in query
+            {
+                $setOnInsert: { userID: userid },
+                $push: {
+                    uploads: {
+                        audioLink,
+                        title,
+                        createdAt,
+                    },
+                },
+            },
+            { new: true, upsert: true }
+        );
 
-        await newAudioFile.save();
-
-        res.status(200).json({ message: "File metadata saved successfully" });
+        res.status(200).json({ message: "File metadata saved successfully", profile: userProfile });
     } catch (error) {
         console.error("Error saving metadata:", error);
         res.status(500).json({ message: "Error saving metadata" });

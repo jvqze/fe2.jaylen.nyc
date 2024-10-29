@@ -1,5 +1,8 @@
+import mongoose from "mongoose";
 import NextAuth, { NextAuthOptions } from "next-auth";
 import DiscordProvider from "next-auth/providers/discord";
+
+import userProfileModel from "../../../models/UserProfile";
 
 export const authOptions: NextAuthOptions = {
     providers: [
@@ -10,12 +13,28 @@ export const authOptions: NextAuthOptions = {
     ],
     callbacks: {
         async jwt({ token, account, profile }) {
-            if (account) {
+            if (account && profile) {
                 token.email = account.providerAccountId;
-                token.name = profile?.username;
-                token.picture = profile?.avatar
+                token.name = profile.username;
+                token.picture = profile.avatar
                     ? `https://cdn.discordapp.com/avatars/${account.providerAccountId}/${profile.avatar}.png`
                     : null;
+
+                if (mongoose.connection.readyState === 0) {
+                    await mongoose.connect(process.env.MONGODB_URI as string);
+                }
+
+                const userID = account.providerAccountId;
+                await userProfileModel.findOneAndUpdate(
+                    { userID },
+                    {
+                        $setOnInsert: {
+                            userID,
+                            discordAvatar: token.picture,
+                        },
+                    },
+                    { upsert: true, new: true },
+                );
             }
             return token;
         },

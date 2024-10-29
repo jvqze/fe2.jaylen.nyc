@@ -1,4 +1,4 @@
-import mongoose, { model, models, Schema } from "mongoose";
+import mongoose, { model, models } from "mongoose";
 
 const audioFileSchema = new mongoose.Schema({
     email: { type: String, required: true },

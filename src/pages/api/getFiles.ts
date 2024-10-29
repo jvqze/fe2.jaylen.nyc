@@ -1,27 +1,36 @@
 import { NextApiRequest, NextApiResponse } from "next";
-
 import MongooseConnect from "../../lib/MongooseConnect";
-import AudioFileModel from "../../models/AudioFile";
+import userProfileModel from "../../models/UserProfile";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     await MongooseConnect();
 
     const { method } = req;
+
     switch (method) {
         case "GET":
             try {
-                const { email } = req.query;
-                if (!email || typeof email !== "string") {
-                    return res.status(400).json({ message: "Invalid email parameter." });
+                const { userid } = req.query;
+
+                console.log("Received userid:", userid);
+                if (!userid || typeof userid !== "string") {
+                    console.log("no")
+                    return res.status(400).json({ message: "Invalid userid parameter." });
                 }
 
-                const files = await AudioFileModel.find({ email });
+                // Log for debugging to confirm `userid` format
+
+                const userProfile = await userProfileModel.findOne({ userID: userid });
+                if (!userProfile) {
+                    return res.status(404).json({ message: "User profile not found." });
+                }
+
                 return res.status(200).json(
-                    files.map(file => ({
-                        name: file.title,
-                        link: file.audioLink,
-                        createdAt: file.createdAt,
-                    })),
+                    userProfile.uploads?.map((upload: { title: string; audioLink: string; createdAt: Date }) => ({
+                        name: upload.title,
+                        link: upload.audioLink,
+                        createdAt: upload.createdAt,
+                    })) || []
                 );
             } catch (error) {
                 console.error("Error fetching files:", error);
@@ -29,7 +38,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             }
 
         default:
-            res.setHeader("Allow", ["GET", "POST"]);
+            res.setHeader("Allow", ["GET"]);
+            console.log("no thanks")
             return res.status(405).end(`Method ${method} Not Allowed`);
     }
 }
