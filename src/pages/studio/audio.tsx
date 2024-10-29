@@ -1,6 +1,7 @@
 import { signIn, useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
+import { FaCopy, FaCheckCircle } from "react-icons/fa";
 
 export default function AudioStudio() {
     const { data: session, status } = useSession();
@@ -10,8 +11,10 @@ export default function AudioStudio() {
     const [startTime, setStartTime] = useState<number>(0);
     const [endTime, setEndTime] = useState<number | null>(null);
     const [newAudioUrl, setNewAudioUrl] = useState<string | null>(null);
+    const [uploadedAudioUrl, setUploadedAudioUrl] = useState<string | null>(null);
     const [isProcessing, setIsProcessing] = useState<boolean>(false);
     const [isUploading, setIsUploading] = useState<boolean>(false);
+    const [isCopied, setIsCopied] = useState<boolean>(false);
 
     useEffect(() => {
         if (typeof file === "string") {
@@ -85,6 +88,7 @@ export default function AudioStudio() {
             console.log(uploadData);
             if (uploadData.success) {
                 const trimmedAudioLink = uploadData.data.direct_url;
+                setUploadedAudioUrl(trimmedAudioLink);
 
                 await fetch("/api/saveFile", {
                     method: "POST",
@@ -108,6 +112,15 @@ export default function AudioStudio() {
             alert("An error occurred while uploading the trimmed audio.");
         } finally {
             setIsUploading(false);
+        }
+    };
+
+    const handleCopyToClipboard = () => {
+        if (uploadedAudioUrl) {
+            navigator.clipboard.writeText(uploadedAudioUrl).then(() => {
+                setIsCopied(true);
+                setTimeout(() => setIsCopied(false), 2000);
+            });
         }
     };
 
@@ -210,10 +223,37 @@ export default function AudioStudio() {
                             </button>
                         </div>
                     )}
+
+                    {uploadedAudioUrl && (
+                        <div className="mt-8 w-full max-w-md p-4 bg-gray-800 rounded-lg shadow-md">
+                            <h3 className="mb-2 text-gray-200">Uploaded Audio</h3>
+                            <p className="text-sm text-blue-400 underline break-all">
+                                {uploadedAudioUrl}
+                            </p>
+                            <button
+                                onClick={handleCopyToClipboard}
+                                className={`mt-2 flex items-center justify-center rounded-lg py-2 px-4 font-semibold ${
+                                    isCopied ? "bg-green-600" : "bg-gray-700 hover:bg-gray-600"
+                                } text-white transition`}
+                            >
+                                {isCopied ? (
+                                    <>
+                                        <FaCheckCircle className="mr-2" />
+                                        Copied!
+                                    </>
+                                ) : (
+                                    <>
+                                        <FaCopy className="mr-2" />
+                                        Copy to Clipboard
+                                    </>
+                                )}
+                            </button>
+                        </div>
+                    )}
                 </>
             ) : (
                 <p className="text-gray-400">Loading audio...</p>
             )}
         </div>
     );
-}
+};
