@@ -169,11 +169,12 @@ export default function AudioStudio() {
                             <input
                                 type="number"
                                 id="start-time"
+                                step="any"
                                 className="w-20 rounded bg-gray-800 p-2 text-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-600"
                                 value={startTime}
                                 min="0"
                                 max={endTime || 0}
-                                onChange={e => setStartTime(Number(e.target.value))}
+                                onChange={(e) => setStartTime(parseFloat(e.target.value) || 0)}
                             />
                         </div>
 
@@ -184,10 +185,11 @@ export default function AudioStudio() {
                             <input
                                 type="number"
                                 id="end-time"
+                                step="any"
                                 className="w-20 rounded bg-gray-800 p-2 text-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-600"
-                                value={endTime || ""}
+                                value={endTime ?? ""}
                                 min={startTime}
-                                onChange={e => setEndTime(Number(e.target.value))}
+                                onChange={(e) => setEndTime(parseFloat(e.target.value) || null)}
                             />
                         </div>
 
@@ -256,4 +258,4 @@ export default function AudioStudio() {
             )}
         </div>
     );
-};
+}
