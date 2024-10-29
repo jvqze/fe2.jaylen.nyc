@@ -18,8 +18,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                     return res.status(400).json({ message: "Invalid userid parameter." });
                 }
 
-                // Log for debugging to confirm `userid` format
-
                 const userProfile = await userProfileModel.findOne({ userID: userid });
                 if (!userProfile) {
                     return res.status(404).json({ message: "User profile not found." });

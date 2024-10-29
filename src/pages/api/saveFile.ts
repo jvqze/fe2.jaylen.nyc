@@ -17,7 +17,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     try {
         const userProfile = await userProfileModel.findOneAndUpdate(
-            { userID: userid },  // Ensure userID is used in query
+            { userID: userid },
             {
                 $setOnInsert: { userID: userid },
                 $push: {
