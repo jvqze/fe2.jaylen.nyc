@@ -5,6 +5,7 @@ import {
     FaCheckCircle,
     FaCopy,
     FaDiscord,
+    FaEdit,
     FaSearch,
     FaTrashAlt,
     FaUpload,
@@ -190,7 +191,7 @@ export default function Page(): JSX.Element {
             <main className="flex min-h-screen flex-col items-center justify-center p-6 text-white">
                 <div className="fixed left-4 top-4 z-50 flex flex-col items-center">
                     {session ? (
-                        <div className="relative">
+                        <div className="group relative">
                             <button
                                 onClick={() => signOut()}
                                 className="rounded-xl bg-neutral-800 p-2 shadow-lg"
@@ -203,6 +204,11 @@ export default function Page(): JSX.Element {
                                     />
                                 )}
                             </button>
+
+                            <div className="pointer-events-none absolute left-1/2 -translate-x-1/2 -translate-y-full transform rounded-md bg-neutral-900 px-3 py-2 text-sm text-white opacity-0 shadow-lg transition-opacity duration-200 group-hover:opacity-100">
+                                <span className="font-semibold">{session.user?.name}</span>
+                                <span className="text-gray-400"> ({session.user?.email})</span>
+                            </div>
                         </div>
                     ) : (
                         <div className="flex flex-1 items-center justify-center">
@@ -274,7 +280,9 @@ export default function Page(): JSX.Element {
                                                     Your browser does not support the audio element.
                                                 </audio>
 
+                                                {/* Action buttons */}
                                                 <div className="absolute right-4 top-4 flex space-x-2 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+                                                    {/* Copy Button */}
                                                     <button
                                                         onClick={() =>
                                                             handleCopyToClipboard(file.link, index)
@@ -290,6 +298,15 @@ export default function Page(): JSX.Element {
                                                         ) : (
                                                             <FaCopy size={16} />
                                                         )}
+                                                    </button>
+
+                                                    <button
+                                                        onClick={() =>
+                                                            (window.location.href = `/studio/audio?file=${encodeURIComponent(file.link)}`)
+                                                        }
+                                                        className="rounded bg-blue-600 p-2 transition hover:bg-blue-700"
+                                                    >
+                                                        <FaEdit size={16} />
                                                     </button>
 
                                                     <button
@@ -313,9 +330,9 @@ export default function Page(): JSX.Element {
                 )}
 
                 <p>
-                    Please note that .ogg Files will mostly not work; it is recommended to use
-                    .mp3! <span className="text-[#94cfff]">Microsoft Edge</span> will not work to listen due to it
-                    not accepting the music data from Tixte.
+                    Please note that .ogg Files will mostly not work; it is recommended to use .mp3!{" "}
+                    <span className="text-[#94cfff]">Microsoft Edge</span> will not work to listen
+                    due to it not accepting the music data from Tixte.
                 </p>
 
                 {notification && (
