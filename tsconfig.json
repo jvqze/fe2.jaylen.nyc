@@ -24,6 +24,6 @@
         "**/*.js",
         "**/*.jsx",
         "**/*.mp3",
-        "next.config.js"
-, "migration.mjs"    ]
+        "next.config.js",
+    ]
 }

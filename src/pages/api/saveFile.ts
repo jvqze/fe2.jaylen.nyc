@@ -1,4 +1,5 @@
 import { NextApiRequest, NextApiResponse } from "next";
+
 import MongooseConnect from "../../lib/MongooseConnect";
 import userProfileModel from "../../models/UserProfile";
 
@@ -28,7 +29,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                     },
                 },
             },
-            { new: true, upsert: true }
+            { new: true, upsert: true },
         );
 
         res.status(200).json({ message: "File metadata saved successfully", profile: userProfile });

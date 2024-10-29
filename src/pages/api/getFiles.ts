@@ -1,4 +1,5 @@
 import { NextApiRequest, NextApiResponse } from "next";
+
 import MongooseConnect from "../../lib/MongooseConnect";
 import userProfileModel from "../../models/UserProfile";
 
@@ -14,7 +15,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
                 console.log("Received userid:", userid);
                 if (!userid || typeof userid !== "string") {
-                    console.log("no")
+                    console.log("no");
                     return res.status(400).json({ message: "Invalid userid parameter." });
                 }
 
@@ -24,11 +25,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                 }
 
                 return res.status(200).json(
-                    userProfile.uploads?.map((upload: { title: string; audioLink: string; createdAt: Date }) => ({
-                        name: upload.title,
-                        link: upload.audioLink,
-                        createdAt: upload.createdAt,
-                    })) || []
+                    userProfile.uploads?.map(
+                        (upload: { title: string; audioLink: string; createdAt: Date }) => ({
+                            name: upload.title,
+                            link: upload.audioLink,
+                            createdAt: upload.createdAt,
+                        }),
+                    ) || [],
                 );
             } catch (error) {
                 console.error("Error fetching files:", error);
@@ -37,7 +40,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
         default:
             res.setHeader("Allow", ["GET"]);
-            console.log("no thanks")
+            console.log("no thanks");
             return res.status(405).end(`Method ${method} Not Allowed`);
     }
 }

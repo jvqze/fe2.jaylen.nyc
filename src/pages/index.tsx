@@ -134,7 +134,7 @@ export default function Page(): JSX.Element {
                     createdAt: new Date(),
                 }),
             });
-    
+
             if (!res.ok) {
                 throw new Error("Failed to save file to database");
             }
@@ -146,8 +146,7 @@ export default function Page(): JSX.Element {
             });
         }
     };
-    
-    
+
     const fetchUploadedFiles = async () => {
         if (session) {
             try {
@@ -159,7 +158,7 @@ export default function Page(): JSX.Element {
                             name: file.name,
                             link: file.link,
                             createdAt: file.createdAt,
-                        }))
+                        })),
                     );
                 } else {
                     console.error("Error fetching uploaded files:", res.statusText);
@@ -169,8 +168,7 @@ export default function Page(): JSX.Element {
             }
         }
     };
-    
-    
+
     useEffect(() => {
         if (session) {
             fetchUploadedFiles();
