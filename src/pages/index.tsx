@@ -42,16 +42,14 @@ export default function Page(): JSX.Element {
     const [isHovered, setIsHovered] = useState(false);
 
     const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-        const tooltipWidth = 150; // approximate width of the tooltip in pixels
+        const tooltipWidth = 150;
         const screenWidth = window.innerWidth;
 
         let adjustedX = e.clientX;
-
-        // Adjust tooltip position if it goes out of bounds on the left or right
         if (e.clientX + tooltipWidth / 2 > screenWidth) {
-            adjustedX = screenWidth - tooltipWidth / 2 - 10; // 10px padding from the edge
+            adjustedX = screenWidth - tooltipWidth / 2 - 10;
         } else if (e.clientX - tooltipWidth / 2 < 0) {
-            adjustedX = tooltipWidth / 2 + 10; // 10px padding from the edge
+            adjustedX = tooltipWidth / 2 + 10;
         }
 
         setTooltipPosition({
@@ -239,16 +237,19 @@ export default function Page(): JSX.Element {
 
                             {isHovered && (
                                 <div
-                                    className="absolute z-10 pointer-events-none bg-neutral-900 text-sm text-white rounded-md shadow-lg px-3 py-2"
+                                    className="pointer-events-none absolute z-10 rounded-md bg-neutral-900 px-3 py-2 text-sm text-white shadow-lg"
                                     style={{
                                         top: tooltipPosition.y + 10,
                                         left: tooltipPosition.x,
                                         transform: "translateX(-50%)",
                                         maxWidth: "150px",
-                                        whiteSpace: "nowrap"
+                                        whiteSpace: "nowrap",
                                     }}
                                 >
-                                    <p className="font-light">Logged in as{" "}<span className="font-semibold">{session.user?.name}</span></p>
+                                    <p className="font-light">
+                                        Logged in as{" "}
+                                        <span className="font-semibold">{session.user?.name}</span>
+                                    </p>
                                 </div>
                             )}
                         </div>
