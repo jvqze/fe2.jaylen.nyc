@@ -38,6 +38,27 @@ export default function Page(): JSX.Element {
         message: string;
         type: "success" | "error" | "info";
     } | null>(null);
+    const [tooltipPosition, setTooltipPosition] = useState({ x: 0, y: 0 });
+    const [isHovered, setIsHovered] = useState(false);
+
+    const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+        const tooltipWidth = 150; // approximate width of the tooltip in pixels
+        const screenWidth = window.innerWidth;
+
+        let adjustedX = e.clientX;
+
+        // Adjust tooltip position if it goes out of bounds on the left or right
+        if (e.clientX + tooltipWidth / 2 > screenWidth) {
+            adjustedX = screenWidth - tooltipWidth / 2 - 10; // 10px padding from the edge
+        } else if (e.clientX - tooltipWidth / 2 < 0) {
+            adjustedX = tooltipWidth / 2 + 10; // 10px padding from the edge
+        }
+
+        setTooltipPosition({
+            x: adjustedX,
+            y: e.clientY,
+        });
+    };
 
     const handleFileChange = async (e: ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
@@ -128,7 +149,7 @@ export default function Page(): JSX.Element {
                     "Content-Type": "application/json",
                 },
                 body: JSON.stringify({
-                    userid: session?.user?.email, // auth is a weirdo and made the email the userid
+                    userid: session?.user?.email,
                     audioLink: fileUrl,
                     title: fileName,
                     createdAt: new Date(),
@@ -197,7 +218,12 @@ export default function Page(): JSX.Element {
             <main className="flex min-h-screen flex-col items-center justify-center p-6 text-white">
                 <div className="fixed left-4 top-4 z-50 flex flex-col items-center">
                     {session ? (
-                        <div className="group relative">
+                        <div
+                            className="group relative"
+                            onMouseMove={handleMouseMove}
+                            onMouseEnter={() => setIsHovered(true)}
+                            onMouseLeave={() => setIsHovered(false)}
+                        >
                             <button
                                 onClick={() => signOut()}
                                 className="rounded-xl bg-neutral-800 p-2 shadow-lg"
@@ -211,10 +237,20 @@ export default function Page(): JSX.Element {
                                 )}
                             </button>
 
-                            <div className="pointer-events-none absolute left-1/2 -translate-x-1/2 -translate-y-full transform rounded-md bg-neutral-900 px-3 py-2 text-sm text-white opacity-0 shadow-lg transition-opacity duration-200 group-hover:opacity-100">
-                                <span className="font-semibold">{session.user?.name}</span>
-                                <span className="text-gray-400"> ({session.user?.email})</span>
-                            </div>
+                            {isHovered && (
+                                <div
+                                    className="absolute z-10 pointer-events-none bg-neutral-900 text-sm text-white rounded-md shadow-lg px-3 py-2"
+                                    style={{
+                                        top: tooltipPosition.y + 10,
+                                        left: tooltipPosition.x,
+                                        transform: "translateX(-50%)",
+                                        maxWidth: "150px",
+                                        whiteSpace: "nowrap"
+                                    }}
+                                >
+                                    <p className="font-light">Logged in as{" "}<span className="font-semibold">{session.user?.name}</span></p>
+                                </div>
+                            )}
                         </div>
                     ) : (
                         <div className="flex flex-1 items-center justify-center">
