@@ -52,6 +52,13 @@ export default function AudioStudio() {
                 }),
             });
 
+            if (!response.ok) {
+                const errorText = await response.text();
+                console.error("Error response from API:", errorText);
+                alert("Error from the server: " + response.status);
+                return;
+            }
+
             const data = await response.json();
             if (data.success) {
                 setNewAudioUrl(data.trimmedAudioUrl);
@@ -80,10 +87,11 @@ export default function AudioStudio() {
             });
 
             const formData = new FormData();
-            formData.append("payload_json", JSON.stringify({
+            const payloadJson = JSON.stringify({
                 domain: "cdn.jaylen.nyc",
                 name: audioFile.name,
-            }));
+            });
+            formData.append("payload_json", payloadJson);
             formData.append("file", audioFile);
 
             const uploadResponse = await fetch("https://api.tixte.com/v1/upload", {
