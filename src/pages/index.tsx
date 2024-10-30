@@ -1,14 +1,7 @@
 import { useSession } from "next-auth/react";
 import Head from "next/head";
-import { ChangeEvent, useEffect, useState, useCallback } from "react";
-import {
-    FaCheckCircle,
-    FaCopy,
-    FaEdit,
-    FaSearch,
-    FaTrashAlt,
-    FaUpload,
-} from "react-icons/fa";
+import { ChangeEvent, useCallback, useEffect, useState } from "react";
+import { FaCheckCircle, FaCopy, FaEdit, FaSearch, FaTrashAlt, FaUpload } from "react-icons/fa";
 
 const uploadDomain = "cdn.jaylen.nyc";
 
@@ -67,7 +60,10 @@ export default function Page(): JSX.Element {
             const { tixteApiKey: apiKey } = await response.json();
             tixteApiKey = apiKey;
         } catch (error) {
-            setNotification({ message: `Error fetching upload configuration. ${error}`, type: "error" });
+            setNotification({
+                message: `Error fetching upload configuration. ${error}`,
+                type: "error",
+            });
             setIsUploading(false);
             return;
         }

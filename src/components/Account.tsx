@@ -1,5 +1,5 @@
 import { signIn, signOut, useSession } from "next-auth/react";
-import Image from "next/image"
+import Image from "next/image";
 import { useState } from "react";
 
 export default function AccountButton() {
@@ -36,9 +36,11 @@ export default function AccountButton() {
                     >
                         {session.user?.image && (
                             <Image
+                                width={45}
+                                height={45}
                                 src={session.user.image}
                                 alt="User Avatar"
-                                className="h-11 w-11 rounded-full border-2"
+                                className="rounded-full border-2"
                             />
                         )}
                     </button>

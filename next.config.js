@@ -15,6 +15,17 @@ module.exports = {
     },
     reactStrictMode: true,
     images: {
-        domains: ["cdn.jaylen.nyc"],
+        remotePatterns: [
+            {
+                protocol: "https",
+                hostname: "cdn.jaylen.nyc",
+                pathname: "/**",
+            },
+            {
+                protocol: "https",
+                hostname: "cdn.discordapp.com",
+                pathname: "/**",
+            },
+        ],
     },
 };
