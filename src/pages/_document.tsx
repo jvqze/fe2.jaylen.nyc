@@ -1,5 +1,3 @@
-import { Analytics } from "@vercel/analytics/react";
-import { SpeedInsights } from "@vercel/speed-insights/next";
 import Document, { Head, Html, Main, NextScript } from "next/document";
 
 export default class ADocument extends Document {
@@ -9,7 +7,7 @@ export default class ADocument extends Document {
                 <meta
                     name="viewport"
                     content="width=device-width, initial-scale=1, viewport-fit=cover"
-                ></meta>
+                />
                 <Head>
                     <meta charSet="utf-8" />
                     <link
@@ -18,7 +16,11 @@ export default class ADocument extends Document {
                         href="https://avatars.githubusercontent.com/u/159128860?v=4"
                     />
                     <meta name="theme-color" content="#ffffff" />
-                    <meta name="description" content="FE2 Uploader for the cool kids 😎" />
+                    <meta name="description" content="FE2 Audio Uploader for the cool kids 😎" />
+                    <meta
+                        property="og:image"
+                        content="https://cdn.jaylen.nyc/r/fe2.jaylen.nyc-banner.png"
+                    />
 
                     <link rel="preconnect" href="https://fonts.googleapis.com" />
                     <link rel="preconnect" href="https://fonts.gstatic.com" />
@@ -32,8 +34,6 @@ export default class ADocument extends Document {
                     <NextScript />
                     <script async src="/theme.js" />
                 </body>
-                <SpeedInsights />
-                <Analytics />
             </Html>
         );
     }
