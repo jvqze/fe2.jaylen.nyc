@@ -1,10 +1,9 @@
-import { signIn, signOut, useSession } from "next-auth/react";
+import { useSession } from "next-auth/react";
 import Head from "next/head";
-import { ChangeEvent, useEffect, useState } from "react";
+import { ChangeEvent, useEffect, useState, useCallback } from "react";
 import {
     FaCheckCircle,
     FaCopy,
-    FaDiscord,
     FaEdit,
     FaSearch,
     FaTrashAlt,
@@ -68,7 +67,7 @@ export default function Page(): JSX.Element {
             const { tixteApiKey: apiKey } = await response.json();
             tixteApiKey = apiKey;
         } catch (error) {
-            setNotification({ message: "Error fetching upload configuration.", type: "error" });
+            setNotification({ message: `Error fetching upload configuration. ${error}`, type: "error" });
             setIsUploading(false);
             return;
         }
@@ -91,13 +90,6 @@ export default function Page(): JSX.Element {
             });
 
             if (!res.ok) {
-                const contentType = res.headers.get("content-type");
-                let data;
-                if (contentType && contentType.includes("application/json")) {
-                    data = await res.json();
-                } else {
-                    data = await res.text();
-                }
                 setNotification({ message: "Upload failed. Please try again.", type: "error" });
                 setIsUploading(false);
                 return;
@@ -114,7 +106,7 @@ export default function Page(): JSX.Element {
                 setNotification({ message: "Upload failed. Please try again.", type: "error" });
             }
         } catch (error) {
-            setNotification({ message: "Error uploading file.", type: "error" });
+            setNotification({ message: `Error uploading file: ${error}`, type: "error" });
         } finally {
             setIsUploading(false);
         }
@@ -141,13 +133,13 @@ export default function Page(): JSX.Element {
             fetchUploadedFiles();
         } catch (error) {
             setNotification({
-                message: "We ran into some problem saving it to database. Please report to Jaylen!",
+                message: `We ran into some problem saving it to database. ${error}`,
                 type: "error",
             });
         }
     };
 
-    const fetchUploadedFiles = async () => {
+    const fetchUploadedFiles = useCallback(async () => {
         if (session) {
             try {
                 const res = await fetch(`/api/getFiles?userid=${session.user?.email}`);
@@ -167,13 +159,13 @@ export default function Page(): JSX.Element {
                 console.error("Error fetching uploaded files:", error);
             }
         }
-    };
+    }, [session]);
 
     useEffect(() => {
         if (session) {
             fetchUploadedFiles();
         }
-    }, [session]);
+    }, [session, fetchUploadedFiles]);
 
     const handleCopyToClipboard = (fileLink: string, index: number) => {
         navigator.clipboard.writeText(fileLink).then(() => {

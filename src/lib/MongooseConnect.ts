@@ -4,7 +4,7 @@ import mongoose from "mongoose";
 dotenv.config();
 
 declare global {
-    var mongooseConnection: any;
+    let mongooseConnection: typeof mongoose.Connection | undefined;
 }
 
 const MONGODB_URI = process.env.MONGODB_URI as string;
