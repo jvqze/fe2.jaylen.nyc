@@ -1,12 +1,22 @@
-import { signIn, useSession } from "next-auth/react";
+import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { FaCheckCircle, FaCopy } from "react-icons/fa";
+
+const isValidAudioUrl = (url: string) => {
+    try {
+        const parsedUrl = new URL(url);
+        return parsedUrl.protocol === "https:" && parsedUrl.hostname === "cdn.jaylen.nyc";
+    } catch {
+        return false;
+    }
+};
 
 export default function AudioStudio() {
     const { data: session, status } = useSession();
     const router = useRouter();
     const { file } = router.query;
+
     const [audioUrl, setAudioUrl] = useState<string | null>(null);
     const [startTime, setStartTime] = useState<number>(0);
     const [endTime, setEndTime] = useState<number | null>(null);
@@ -15,10 +25,11 @@ export default function AudioStudio() {
     const [isProcessing, setIsProcessing] = useState<boolean>(false);
     const [isUploading, setIsUploading] = useState<boolean>(false);
     const [isCopied, setIsCopied] = useState<boolean>(false);
-
     useEffect(() => {
-        if (typeof file === "string") {
+        if (typeof file === "string" && isValidAudioUrl(file)) {
             setAudioUrl(file);
+        } else {
+            console.error("Invalid audio URL.");
         }
     }, [file]);
 
@@ -41,6 +52,13 @@ export default function AudioStudio() {
                 }),
             });
 
+            if (!response.ok) {
+                const errorText = await response.text();
+                console.error("Error response from API:", errorText);
+                alert("Error from the server: " + response.status);
+                return;
+            }
+
             const data = await response.json();
             if (data.success) {
                 setNewAudioUrl(data.trimmedAudioUrl);
@@ -57,7 +75,6 @@ export default function AudioStudio() {
 
     const handleUploadNewAudio = async () => {
         if (!newAudioUrl) return;
-
         setIsUploading(true);
 
         try {
@@ -68,33 +85,30 @@ export default function AudioStudio() {
             const audioFile = new File([audioBlob], `Trimmed_Audio_${Date.now()}.mp3`, {
                 type: "audio/mpeg",
             });
+
             const formData = new FormData();
-            const payloadJson = JSON.stringify({
-                domain: "cdn.jaylen.nyc",
-                name: audioFile.name,
-            });
-            formData.append("payload_json", payloadJson);
+            formData.append(
+                "payload_json",
+                JSON.stringify({
+                    domain: "cdn.jaylen.nyc",
+                    name: audioFile.name,
+                }),
+            );
             formData.append("file", audioFile);
 
             const uploadResponse = await fetch("https://api.tixte.com/v1/upload", {
                 method: "POST",
-                headers: {
-                    Authorization: tixteApiKey,
-                },
+                headers: { Authorization: tixteApiKey },
                 body: formData,
             });
 
             const uploadData = await uploadResponse.json();
-            console.log(uploadData);
             if (uploadData.success) {
                 const trimmedAudioLink = uploadData.data.direct_url;
                 setUploadedAudioUrl(trimmedAudioLink);
-
                 await fetch("/api/saveFile", {
                     method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
+                    headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({
                         userid: session?.user?.email,
                         audioLink: trimmedAudioLink,
@@ -135,12 +149,6 @@ export default function AudioStudio() {
                 <p className="mb-4 text-sm text-gray-400">
                     Please authorize with Discord to continue.
                 </p>
-                <button
-                    onClick={() => signIn("discord")}
-                    className="mt-4 rounded-lg bg-blue-600 px-5 py-3 text-lg font-semibold text-white shadow-lg transition hover:bg-blue-700"
-                >
-                    Authorize with Discord
-                </button>
             </div>
         );
     }
