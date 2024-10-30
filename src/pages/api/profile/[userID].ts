@@ -25,13 +25,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                     userID: userProfile.userID,
                     discordAvatar: userProfile.discordAvatar,
                     createdAt: userProfile.createdAt,
-                    uploads: userProfile.uploads.map(
-                        (upload: { title: string; audioLink: string; createdAt: Date }) => ({
+                    uploads: userProfile.uploads
+                        .filter((upload: { private: Boolean }) => upload.private)
+                        .map((upload: { title: string; audioLink: string; createdAt: Date }) => ({
                             title: upload.title,
                             audioLink: upload.audioLink,
                             createdAt: upload.createdAt,
-                        }),
-                    ),
+                        })),
                 });
             } catch (error) {
                 console.error("Error fetching user profile:", error);
@@ -39,7 +39,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             }
 
         default:
-            // Handle unsupported HTTP methods
             res.setHeader("Allow", ["GET"]);
             return res.status(405).end(`Method ${method} Not Allowed`);
     }

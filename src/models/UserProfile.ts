@@ -3,6 +3,7 @@ import { model, models, Schema } from "mongoose";
 const uploadSchema = new Schema({
     audioLink: { type: String, required: true },
     title: { type: String },
+    private: { type: Boolean, default: false },
     createdAt: { type: Date, default: Date.now },
 });
 
