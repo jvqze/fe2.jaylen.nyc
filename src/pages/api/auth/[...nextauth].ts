@@ -25,16 +25,18 @@ export const authOptions: NextAuthOptions = {
                 }
 
                 const userID = account.providerAccountId;
-                await userProfileModel.findOneAndUpdate(
-                    { userID },
-                    {
-                        $setOnInsert: {
+                const existingUser = await userProfileModel.findOne({ userID });
+
+                if (!existingUser || existingUser.discordAvatar !== token.picture) {
+                    await userProfileModel.findOneAndUpdate(
+                        { userID },
+                        {
                             userID,
                             discordAvatar: token.picture,
                         },
-                    },
-                    { upsert: true, new: true },
-                );
+                        { upsert: true, new: true },
+                    );
+                }
             }
             return token;
         },
