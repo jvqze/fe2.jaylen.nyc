@@ -26,7 +26,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                     discordAvatar: userProfile.discordAvatar,
                     createdAt: userProfile.createdAt,
                     uploads: userProfile.uploads
-                        .filter((upload: { private: Boolean }) => upload.private)
+                        .filter((upload: { private: boolean }) => upload.private)
                         .map((upload: { title: string; audioLink: string; createdAt: Date }) => ({
                             title: upload.title,
                             audioLink: upload.audioLink,
