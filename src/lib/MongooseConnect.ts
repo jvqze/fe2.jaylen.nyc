@@ -24,7 +24,7 @@ export default async function MongooseConnect() {
         connection = mongoose.connect(MONGODB_URI, {
             socketTimeoutMS: 45000,
             connectTimeoutMS: 10000,
-            autoIndex: process.env.NODE_ENV !== "production",
+            autoIndex: process.env.VERCEL_ENV !== "production" || process.env.NODE_ENV !== "production",
         });
     }
 
