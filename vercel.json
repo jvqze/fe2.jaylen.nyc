@@ -1,0 +1,23 @@
+{
+    "buildCommand": "npm run build",
+    "cleanUrls": true,
+    "framework": "nextjs",
+    "functions": {
+        "api/*.ts": {
+            "maxDuration": 50,
+            "memory": 3000
+        }
+    },
+    "git": {
+        "deploymentEnabled": {
+            "main": false
+        }
+    },
+    "github": {
+        "autoJobCancelation": true
+    },
+    "instalCommand": "npm install --force",
+    "name": "fe2-jaylen-nyc",
+    "outputDirectory": "build",
+    "trailingStash": true
+}
