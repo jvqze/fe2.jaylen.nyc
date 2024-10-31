@@ -19,7 +19,7 @@ export const getServerSideProps: GetServerSideProps = async context => {
     const { userID } = context.params || {};
 
     const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
-    const res = await fetch(`${baseUrl}/api/profile/${userID}`);
+    const res = await fetch(`${baseUrl}/api/profiles/${userID}`);
     if (!res.ok) {
         return {
             notFound: true,
@@ -32,7 +32,7 @@ export const getServerSideProps: GetServerSideProps = async context => {
     };
 };
 
-const UserProfilePage = ({ profile }: { profile: UserProfile }) => {
+export default function UserProfilePage({ profile }: { profile: UserProfile }): JSX.Element {
     return (
         <div className="flex min-h-screen flex-col bg-gradient-to-br from-gray-900 via-black to-gray-800 p-4 md:flex-row">
             <aside className="mb-6 flex flex-col items-center rounded-lg bg-gradient-to-b from-gray-800 to-black p-6 shadow-md md:mb-0 md:mr-6 md:w-1/4 md:items-start">
@@ -84,6 +84,4 @@ const UserProfilePage = ({ profile }: { profile: UserProfile }) => {
             </main>
         </div>
     );
-};
-
-export default UserProfilePage;
+}
