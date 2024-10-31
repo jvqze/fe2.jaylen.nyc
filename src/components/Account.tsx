@@ -22,7 +22,7 @@ export default function AccountButton() {
     };
 
     return (
-        <div className="fixed left-4 top-4 z-50 flex flex-col items-center">
+        <div className="relative flex items-center">
             {session ? (
                 <div
                     className="group relative"
@@ -32,15 +32,15 @@ export default function AccountButton() {
                 >
                     <button
                         onClick={() => signOut()}
-                        className="rounded-xl bg-neutral-800 p-2 shadow-lg"
+                        className="rounded-full bg-neutral-800 p-1 shadow-md hover:bg-neutral-700"
                     >
                         {session.user?.image && (
                             <Image
-                                width={45}
-                                height={45}
+                                width={40}
+                                height={40}
                                 src={session.user.image}
                                 alt="User Avatar"
-                                className="rounded-full border-2"
+                                className="rounded-full border-2 border-indigo-500"
                             />
                         )}
                     </button>
@@ -66,7 +66,7 @@ export default function AccountButton() {
             ) : (
                 <button
                     onClick={() => signIn("discord")}
-                    className="flex items-center justify-center space-x-3 rounded bg-blue-600 px-5 py-3 text-lg text-white shadow-lg transition hover:bg-blue-700"
+                    className="flex items-center justify-center space-x-3 rounded bg-blue-600 px-4 py-2 text-sm text-white shadow-lg transition hover:bg-blue-700"
                 >
                     <span>Authorize with Discord</span>
                 </button>
