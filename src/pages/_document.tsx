@@ -16,7 +16,10 @@ export default class ADocument extends Document {
                         href="https://avatars.githubusercontent.com/u/159128860?v=4"
                     />
                     <meta name="theme-color" content="#ffffff" />
-                    <meta name="description" content="FE2 Audio Uploader for the cool kids 😎" />
+                    <meta
+                        name="description"
+                        content="Flood Escape 2 Audio Uploader is for people that would love permanent uploads and also trimming. There's more to offer in FE2 Audio Uploader!"
+                    />
                     <meta
                         property="og:image"
                         content="https://cdn.jaylen.nyc/r/fe2.jaylen.nyc-banner.png"
