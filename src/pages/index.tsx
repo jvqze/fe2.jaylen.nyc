@@ -2,6 +2,7 @@ import { useSession } from "next-auth/react";
 import Head from "next/head";
 import { ChangeEvent, useCallback, useEffect, useState } from "react";
 import { FaCheckCircle, FaCopy, FaEdit, FaSearch, FaTrashAlt, FaUpload } from "react-icons/fa";
+import Modal from "../components/Modal";
 
 const uploadDomain = "cdn.jaylen.nyc";
 
@@ -22,6 +23,8 @@ export default function Page(): JSX.Element {
     const { data: session } = useSession();
     const [isCopied, setIsCopied] = useState<{ [key: string]: boolean }>({});
     const [isUploading, setIsUploading] = useState<boolean>(false);
+    const [showModal, setShowModal] = useState(false);
+    const [isPrivate, setIsPrivate] = useState(false);
     const [uploadedFiles, setUploadedFiles] = useState<
         Array<{ link: string; name: string; createdAt: string }>
     >([]);
@@ -34,29 +37,32 @@ export default function Page(): JSX.Element {
     const handleFileChange = async (e: ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (!file) return;
-
+    
         const isValidAudio =
             file.type === "audio/mp3" || file.type === "audio/mpeg" || file.type === "audio/ogg";
-
         if (!isValidAudio) {
             setNotification({ message: "Please upload a valid .mp3 or .ogg file.", type: "error" });
             return;
         }
-
-        setIsUploading(true);
-
+    
         if (!session) {
             setNotification({ message: "You must be logged in to upload a file.", type: "error" });
-            setIsUploading(false);
             return;
         }
+    
+        // Show modal to ask for public/private preference
+        setShowModal(true);
+    };
+    
 
+    const handleUpload = async (file: File) => {
+        setIsUploading(true);
         let tixteApiKey: string;
+
+        // Fetch Tixte API Key (keeping this part unchanged)
         try {
             const response = await fetch("/api/getKey");
-            if (!response.ok) {
-                throw new Error("Failed to get Tixte API key");
-            }
+            if (!response.ok) throw new Error("Failed to get Tixte API key");
             const { tixteApiKey: apiKey } = await response.json();
             tixteApiKey = apiKey;
         } catch (error) {
@@ -93,9 +99,8 @@ export default function Page(): JSX.Element {
 
             const result = await res.json();
             if (result.success) {
-                console.log(result);
                 setNotification({ message: "File uploaded successfully!", type: "success" });
-                await saveToMongoose(result.data.direct_url, file.name);
+                await saveToMongoose(result.data.direct_url, file.name, isPrivate);
                 navigator.clipboard.writeText(result.data.direct_url);
                 setNotification({ message: "URL copied to clipboard!", type: "success" });
             } else {
@@ -108,7 +113,7 @@ export default function Page(): JSX.Element {
         }
     };
 
-    const saveToMongoose = async (fileUrl: string, fileName: string) => {
+    const saveToMongoose = async (fileUrl: string, fileName: string, isPrivate: boolean) => {
         try {
             const res = await fetch("/api/saveFile", {
                 method: "POST",
@@ -172,6 +177,15 @@ export default function Page(): JSX.Element {
         });
     };
 
+    const handleModalConfirm = (isFilePrivate: boolean) => {
+        setIsPrivate(isFilePrivate);
+        setShowModal(false);
+        const fileInput = document.getElementById("file-upload") as HTMLInputElement;
+        if (fileInput?.files) {
+            handleUpload(fileInput.files[0]);
+        }
+    };
+
     const filteredFiles = uploadedFiles.filter(file =>
         file.name?.toLowerCase().includes(searchTerm.toLowerCase()),
     );
@@ -203,6 +217,13 @@ export default function Page(): JSX.Element {
                                 disabled={isUploading}
                             />
                         </div>
+
+                        {showModal && (
+                            <Modal
+                                onClose={() => setShowModal(false)}
+                                onConfirm={handleModalConfirm}
+                            />
+                        )}
 
                         <div className="mt-20 w-full max-w-6xl space-y-8 rounded-lg bg-neutral-800 p-8 shadow-2xl">
                             <div className="relative">
