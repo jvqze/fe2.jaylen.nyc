@@ -18,7 +18,7 @@ export default function App({
                 </h1>
                 <div className="flex items-center space-x-3">
                     <Link
-                        href="/`"
+                        href="/"
                         className="relative transform rounded-md bg-blue-800 px-4 py-2 text-lg font-medium shadow-lg shadow-blue-500/50 transition duration-300 ease-in-out hover:scale-105 hover:bg-blue-500 hover:shadow-none"
                     >
                         Home

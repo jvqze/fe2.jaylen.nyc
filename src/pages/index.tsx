@@ -124,14 +124,12 @@ export default function Page(): JSX.Element {
                     userid: session?.user?.email,
                     audioLink: fileUrl,
                     title: fileName,
+                    private: isPrivate,
                     createdAt: new Date(),
                 }),
             });
 
-            if (!res.ok) {
-                throw new Error("Failed to save file to database");
-            }
-            fetchUploadedFiles();
+            if (!res.ok) throw new Error("Failed to save file to database");
         } catch (error) {
             setNotification({
                 message: `We ran into some problem saving it to database. ${error}`,

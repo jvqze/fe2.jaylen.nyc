@@ -27,6 +27,7 @@ export const getServerSideProps: GetServerSideProps = async context => {
     }
 
     const profile = await res.json();
+    console.log(profile)
     return {
         props: { profile },
     };
