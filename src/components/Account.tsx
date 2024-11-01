@@ -36,8 +36,8 @@ export default function AccountButton() {
                     >
                         {session.user?.image && (
                             <Image
-                                width={40}
-                                height={40}
+                                width={50}
+                                height={50}
                                 src={session.user.image}
                                 alt="User Avatar"
                                 className="rounded-full border-2 border-indigo-500"
