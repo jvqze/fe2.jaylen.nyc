@@ -13,7 +13,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             try {
                 const { userid } = req.query;
                 if (!userid || typeof userid !== "string") {
-                    console.log("no");
                     return res.status(400).json({ message: "Invalid userid parameter." });
                 }
 

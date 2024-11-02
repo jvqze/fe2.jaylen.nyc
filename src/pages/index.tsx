@@ -2,6 +2,7 @@ import { useSession } from "next-auth/react";
 import Head from "next/head";
 import { ChangeEvent, useCallback, useEffect, useState } from "react";
 import { FaCheckCircle, FaCopy, FaEdit, FaSearch, FaTrashAlt, FaUpload } from "react-icons/fa";
+
 import Modal from "../components/Modal";
 
 const uploadDomain = "cdn.jaylen.nyc";
@@ -37,29 +38,25 @@ export default function Page(): JSX.Element {
     const handleFileChange = async (e: ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (!file) return;
-    
+
         const isValidAudio =
             file.type === "audio/mp3" || file.type === "audio/mpeg" || file.type === "audio/ogg";
         if (!isValidAudio) {
             setNotification({ message: "Please upload a valid .mp3 or .ogg file.", type: "error" });
             return;
         }
-    
+
         if (!session) {
             setNotification({ message: "You must be logged in to upload a file.", type: "error" });
             return;
         }
-    
-        // Show modal to ask for public/private preference
         setShowModal(true);
     };
-    
 
-    const handleUpload = async (file: File) => {
+    const handleUpload = async (file: File, isPrivate: boolean) => {
         setIsUploading(true);
         let tixteApiKey: string;
 
-        // Fetch Tixte API Key (keeping this part unchanged)
         try {
             const response = await fetch("/api/getKey");
             if (!response.ok) throw new Error("Failed to get Tixte API key");
@@ -176,11 +173,10 @@ export default function Page(): JSX.Element {
     };
 
     const handleModalConfirm = (isFilePrivate: boolean) => {
-        setIsPrivate(isFilePrivate);
         setShowModal(false);
         const fileInput = document.getElementById("file-upload") as HTMLInputElement;
         if (fileInput?.files) {
-            handleUpload(fileInput.files[0]);
+            handleUpload(fileInput.files[0], isFilePrivate);
         }
     };
 

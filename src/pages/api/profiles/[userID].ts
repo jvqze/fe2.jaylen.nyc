@@ -26,14 +26,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                     discordAvatar: userProfile.discordAvatar,
                     createdAt: userProfile.createdAt,
                     uploads: userProfile.uploads
-                        .filter((upload: { private: boolean | null }) => upload.private === false)
+                        .filter((upload: { private?: boolean | null }) => upload.private !== true)
                         .map((upload: { title: string; audioLink: string; createdAt: Date }) => ({
                             title: upload.title,
                             audioLink: upload.audioLink,
                             createdAt: upload.createdAt,
                         })),
                 });
-                       
             } catch (error) {
                 console.error("Error fetching user profile:", error);
                 return res.status(500).json({ message: "Error fetching user profile." });

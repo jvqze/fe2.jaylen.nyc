@@ -9,7 +9,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
 
     await MongooseConnect();
-    const { userid, audioLink, title, createdAt } = req.body;
+    const { userid, audioLink, title, private: isPrivate, createdAt } = req.body;
     if (typeof userid !== "string") {
         return res.status(400).json({ message: "Invalid userID format" });
     }
@@ -23,13 +23,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                     uploads: {
                         audioLink,
                         title,
+                        private: isPrivate,
                         createdAt,
                     },
                 },
             },
             { new: true, upsert: true },
         );
-
         res.status(200).json({ message: "File metadata saved successfully", profile: userProfile });
     } catch (error) {
         console.error("Error saving metadata:", error);

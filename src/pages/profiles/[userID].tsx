@@ -27,7 +27,6 @@ export const getServerSideProps: GetServerSideProps = async context => {
     }
 
     const profile = await res.json();
-    console.log(profile)
     return {
         props: { profile },
     };
@@ -39,7 +38,7 @@ export default function UserProfilePage({ profile }: { profile: UserProfile }): 
             <aside className="mb-6 flex flex-col items-center rounded-lg bg-gradient-to-b from-gray-800 to-black p-6 shadow-md md:mb-0 md:mr-6 md:w-1/4 md:items-start">
                 <div className="mb-4 flex items-center space-x-4">
                     <Image
-                        src={profile.discordAvatar}
+                        src={profile.discordAvatar || "https://cdn.jaylen.nyc/r/default-profile.jpg"}
                         alt="User Avatar"
                         width={60}
                         height={60}
