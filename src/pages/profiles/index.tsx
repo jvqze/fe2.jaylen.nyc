@@ -50,7 +50,7 @@ const ProfilesPage = ({ profiles }: ProfilesPageProps) => {
                             <div className="transform cursor-pointer rounded-lg bg-gray-800 p-4 shadow-md transition hover:scale-105 hover:bg-gray-700">
                                 <div className="flex items-center space-x-4">
                                     <Image
-                                        src={profile.discordAvatar}
+                                        src={`${profile.discordAvatar || "https://cdn.jaylen.nyc/r/default-profile.jpg"}`}
                                         alt={`${profile.userID}'s Avatar`}
                                         width={60}
                                         height={60}
