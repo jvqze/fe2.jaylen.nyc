@@ -51,13 +51,13 @@ Before setting up the project locally, ensure you have the following installed o
 1. Clone the repository:
 
     ```bash
-    git clone https://github.com/jvqze/fe2.jaylen.nyc.git
+    git clone https://github.com/jvqze/FE2-Audio-Uploader.git
     ```
 
 2. Navigate to the project directory:
 
     ```bash
-    cd fe2.jaylen.nyc
+    cd FE2-Audio-Uploader
     ```
 
 3. Install the dependencies:
@@ -69,7 +69,7 @@ Before setting up the project locally, ensure you have the following installed o
     or
 
     ```bash
-    npm install
+    npm install --force
     ```
 
 4. Create a `.env` file in the root directory, and add the required environment variables:
