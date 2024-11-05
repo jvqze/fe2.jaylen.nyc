@@ -53,7 +53,15 @@ export default function Page(): JSX.Element {
         setShowModal(true);
     };
 
-    const handleUpload = async (file: File, isPrivate: boolean) => {
+    const handleModalConfirm = (isFilePrivate: boolean, title: string) => {
+        setShowModal(false);
+        const fileInput = document.getElementById("file-upload") as HTMLInputElement;
+        if (fileInput?.files) {
+            handleUpload(fileInput.files[0], isFilePrivate, title);
+        }
+    };
+
+    const handleUpload = async (file: File, isPrivate: boolean, title: string) => {
         setIsUploading(true);
         let tixteApiKey: string;
 
@@ -97,7 +105,7 @@ export default function Page(): JSX.Element {
             const result = await res.json();
             if (result.success) {
                 setNotification({ message: "File uploaded successfully!", type: "success" });
-                await saveToMongoose(result.data.direct_url, file.name, isPrivate);
+                await saveToMongoose(result.data.direct_url, title, isPrivate);
                 navigator.clipboard.writeText(result.data.direct_url);
                 setNotification({ message: "URL copied to clipboard!", type: "success" });
             } else {
@@ -110,7 +118,7 @@ export default function Page(): JSX.Element {
         }
     };
 
-    const saveToMongoose = async (fileUrl: string, fileName: string, isPrivate: boolean) => {
+    const saveToMongoose = async (fileUrl: string, title: string, isPrivate: boolean) => {
         try {
             const res = await fetch("/api/saveFile", {
                 method: "POST",
@@ -120,7 +128,7 @@ export default function Page(): JSX.Element {
                 body: JSON.stringify({
                     userid: session?.user?.email,
                     audioLink: fileUrl,
-                    title: fileName,
+                    title: title,
                     private: isPrivate,
                     createdAt: new Date(),
                 }),
@@ -170,14 +178,6 @@ export default function Page(): JSX.Element {
                 setIsCopied(prev => ({ ...prev, [index]: false }));
             }, 1500);
         });
-    };
-
-    const handleModalConfirm = (isFilePrivate: boolean) => {
-        setShowModal(false);
-        const fileInput = document.getElementById("file-upload") as HTMLInputElement;
-        if (fileInput?.files) {
-            handleUpload(fileInput.files[0], isFilePrivate);
-        }
     };
 
     const filteredFiles = uploadedFiles.filter(file =>
