@@ -28,7 +28,7 @@
         "mongodb": "^6.9.0",
         "mongoose": "^8.7.0",
         "next-auth": "^4.24.8",
-        "next-themes": "^0.3.0",
+        "next-themes": "^0.4.1",
         "node-fetch": "^3.3.2",
         "nprogress": "^0.2.0",
         "react": "^18.2.0",
@@ -62,7 +62,7 @@
         "typescript": "5.6.3"
     },
     "name": "fe2.jaylen.nyc",
-    "version": "1.2.9",
+    "version": "1.2.10",
     "description": "fe2.jaylen.nyc is a subdomain for a Roblox game called Flood Escape 2 Community Maps!",
     "main": "next.config.js",
     "keywords": [
