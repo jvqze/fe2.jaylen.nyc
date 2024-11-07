@@ -1,7 +1,7 @@
 import { useSession } from "next-auth/react";
 import Head from "next/head";
 import { ChangeEvent, useCallback, useEffect, useState } from "react";
-import { FaCheckCircle, FaCopy, FaEdit, FaSearch, FaTrashAlt, FaUpload } from "react-icons/fa";
+import { FaCheckCircle, FaCopy, FaEdit, FaList, FaSearch, FaUpload } from "react-icons/fa";
 
 import Modal from "../components/Modal";
 
@@ -25,7 +25,6 @@ export default function Page(): JSX.Element {
     const [isCopied, setIsCopied] = useState<{ [key: string]: boolean }>({});
     const [isUploading, setIsUploading] = useState<boolean>(false);
     const [showModal, setShowModal] = useState(false);
-    const [isPrivate, setIsPrivate] = useState(false);
     const [uploadedFiles, setUploadedFiles] = useState<
         Array<{ link: string; name: string; createdAt: string }>
     >([]);
@@ -34,6 +33,7 @@ export default function Page(): JSX.Element {
         message: string;
         type: "success" | "error" | "info";
     } | null>(null);
+    const [compactView, setCompactView] = useState(false);
 
     const handleFileChange = async (e: ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
@@ -180,9 +180,9 @@ export default function Page(): JSX.Element {
         });
     };
 
-    const filteredFiles = uploadedFiles.filter(file =>
-        file.name?.toLowerCase().includes(searchTerm.toLowerCase()),
-    );
+    const filteredFiles = uploadedFiles
+        .filter(file => file.name?.toLowerCase().includes(searchTerm.toLowerCase()))
+        .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
 
     return (
         <div>
@@ -193,7 +193,7 @@ export default function Page(): JSX.Element {
             <main className="flex min-h-screen flex-col items-center justify-center p-6 text-white">
                 {session && (
                     <>
-                        <div className="fixed right-4 top-4">
+                        <div className="relative flex items-center space-x-4">
                             <label htmlFor="file-upload" className="cursor-pointer">
                                 <div
                                     className={`flex items-center justify-center space-x-2 rounded-lg p-3 shadow-lg transition ${isUploading ? "cursor-not-allowed bg-gray-800" : "bg-gray-600 hover:bg-gray-700"}`}
@@ -210,6 +210,13 @@ export default function Page(): JSX.Element {
                                 className="hidden"
                                 disabled={isUploading}
                             />
+                            <button
+                                onClick={() => setCompactView(!compactView)}
+                                className="flex items-center space-x-2 rounded-lg bg-gray-600 p-3 shadow-lg transition hover:bg-gray-700"
+                            >
+                                <FaList size={20} />
+                                <span>{compactView ? "Grid" : "Compact"}</span>
+                            </button>
                         </div>
 
                         {showModal && (
@@ -219,7 +226,7 @@ export default function Page(): JSX.Element {
                             />
                         )}
 
-                        <div className="mt-20 w-full max-w-6xl space-y-8 rounded-lg bg-neutral-800 p-8 shadow-2xl">
+                        <div className="mt-5 w-full max-w-6xl space-y-8 rounded-lg bg-neutral-800 p-8 shadow-2xl">
                             <div className="relative">
                                 <input
                                     type="text"
@@ -228,84 +235,77 @@ export default function Page(): JSX.Element {
                                     value={searchTerm}
                                     onChange={e => setSearchTerm(e.target.value)}
                                 />
-                                <FaSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" />
+                                <FaSearch
+                                    className="absolute left-3 top-3 text-gray-400"
+                                    size={20}
+                                />
                             </div>
 
-                            <div>
-                                {filteredFiles.length > 0 ? (
-                                    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                                        {filteredFiles.map((file, index) => (
-                                            <div
-                                                key={index}
-                                                className="group relative rounded-lg bg-zinc-900 p-6 shadow-lg transition hover:bg-zinc-800"
-                                            >
-                                                <div className="flex items-center justify-between">
-                                                    <div className="max-w-[150px] truncate text-lg font-semibold text-blue-400">
-                                                        {file.name}
-                                                    </div>
-                                                    <div className="text-sm text-gray-400">
-                                                        {new Date(
-                                                            file.createdAt,
-                                                        ).toLocaleDateString()}
-                                                    </div>
-                                                </div>
-
-                                                <audio controls className="mt-4 w-full">
-                                                    <source src={file.link} type="audio/mpeg" />
-                                                    Your browser does not support the audio element.
-                                                </audio>
-                                                <div className="absolute right-4 top-4 flex space-x-2 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+                            <div className={compactView ? "space-y-4" : "grid grid-cols-2 gap-4"}>
+                                {filteredFiles.length === 0 ? (
+                                    <div className="text-center text-gray-500">No files found.</div>
+                                ) : (
+                                    filteredFiles.map((file, index) => (
+                                        <div
+                                            key={index}
+                                            className={`flex items-center ${compactView ? "space-x-4" : "flex-col space-y-2"} rounded-lg bg-neutral-700 p-4`}
+                                        >
+                                            <div className="flex w-full items-center justify-between">
+                                                <span className="truncate text-sm font-medium">
+                                                    {file.name}
+                                                </span>
+                                                <div className="flex space-x-3">
                                                     <button
+                                                        className="focus:outline-none"
                                                         onClick={() =>
                                                             handleCopyToClipboard(file.link, index)
                                                         }
-                                                        className={`rounded p-2 ${
-                                                            isCopied[index]
-                                                                ? "bg-green-600 hover:bg-green-700"
-                                                                : "bg-gray-600 hover:bg-gray-700"
-                                                        } transition`}
                                                     >
                                                         {isCopied[index] ? (
-                                                            <FaCheckCircle size={16} />
+                                                            <FaCheckCircle
+                                                                size={18}
+                                                                className="text-green-400"
+                                                            />
                                                         ) : (
-                                                            <FaCopy size={16} />
+                                                            <FaCopy
+                                                                size={18}
+                                                                className="text-gray-400"
+                                                            />
                                                         )}
                                                     </button>
-
                                                     <button
+                                                        className="focus:outline-none"
                                                         onClick={() =>
-                                                            (window.location.href = `/studio/audio?file=${encodeURIComponent(file.link)}`)
+                                                            (window.location.href = `/studio?file=${encodeURIComponent(file.link)}`)
                                                         }
-                                                        className="rounded bg-blue-600 p-2 transition hover:bg-blue-700"
                                                     >
-                                                        <FaEdit size={16} />
-                                                    </button>
-
-                                                    <button
-                                                        disabled
-                                                        className="cursor-not-allowed rounded bg-red-900 p-2 opacity-50"
-                                                    >
-                                                        <FaTrashAlt size={16} />
+                                                        <FaEdit
+                                                            size={18}
+                                                            className="text-blue-400"
+                                                        />
                                                     </button>
                                                 </div>
                                             </div>
-                                        ))}
-                                    </div>
-                                ) : (
-                                    <p className="text-center text-lg text-gray-400">
-                                        No uploaded files found.
-                                    </p>
+                                            {!compactView && (
+                                                <audio
+                                                    src={file.link}
+                                                    controls
+                                                    className="mt-2 w-full"
+                                                ></audio>
+                                            )}
+                                        </div>
+                                    ))
                                 )}
                             </div>
                         </div>
                     </>
                 )}
 
-                <p>
-                    Please note that .ogg Files will mostly not work; it is recommended to use .mp3!{" "}
-                    <span className="text-[#94cfff]">Microsoft Edge</span> will not work to listen
-                    due to it not accepting the music data from Tixte.
-                </p>
+                {!session && (
+                    <p className="text-center text-gray-400">
+                        Please log in to access the uploader.
+                    </p>
+                )}
 
                 {notification && (
                     <Notification message={notification.message} type={notification.type} />

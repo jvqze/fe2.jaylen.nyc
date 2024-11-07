@@ -19,6 +19,7 @@ export const authOptions: NextAuthOptions = {
                 token.picture = profile.avatar
                     ? `https://cdn.discordapp.com/avatars/${account.providerAccountId}/${profile.avatar}.png`
                     : null;
+                token.username = profile.username;
 
                 if (mongoose.connection.readyState === 0) {
                     await mongoose.connect(process.env.MONGODB_URI as string);
@@ -27,12 +28,17 @@ export const authOptions: NextAuthOptions = {
                 const userID = account.providerAccountId;
                 const existingUser = await userProfileModel.findOne({ userID });
 
-                if (!existingUser || existingUser.discordAvatar !== token.picture) {
+                if (
+                    !existingUser ||
+                    existingUser.discordAvatar !== token.picture ||
+                    existingUser.username !== token.username
+                ) {
                     await userProfileModel.findOneAndUpdate(
                         { userID },
                         {
                             userID,
                             discordAvatar: token.picture,
+                            username: token.username,
                         },
                         { upsert: true, new: true },
                     );
@@ -41,9 +47,10 @@ export const authOptions: NextAuthOptions = {
             return token;
         },
         async session({ session, token }) {
-            session.user.email = token.email as string;
             session.user.name = token.name as string;
+            session.user.email = token.email as string;
             session.user.image = token.picture as string;
+            session.user.username = token.username as string;
             return session;
         },
     },

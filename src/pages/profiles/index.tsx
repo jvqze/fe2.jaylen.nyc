@@ -1,9 +1,11 @@
 import { GetServerSideProps } from "next";
+import Head from "next/head";
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 
 interface Profile {
+    username: string;
     userID: string;
     discordAvatar: string;
     createdAt: string;
@@ -31,6 +33,9 @@ const ProfilesPage = ({ profiles }: ProfilesPageProps) => {
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-800 p-8 text-white">
+            <Head>
+                <title>User Profiles</title>
+            </Head>
             <h1 className="mb-8 text-center text-4xl font-bold">User Profiles</h1>
 
             <div className="mb-6 flex justify-center">
@@ -58,7 +63,7 @@ const ProfilesPage = ({ profiles }: ProfilesPageProps) => {
                                     />
                                     <div>
                                         <h2 className="text-lg font-semibold text-white">
-                                            {profile.userID}
+                                            {profile.username || profile.userID}
                                         </h2>
                                         <p className="text-sm text-gray-400">
                                             Joined on{" "}

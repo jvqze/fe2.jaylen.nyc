@@ -16,6 +16,7 @@ const badgeSchema = new Schema({
 });
 
 const userProfileSchema = new Schema({
+    username: { type: String, required: false, default: null },
     userID: { type: String, required: true },
     discordAvatar: { type: String, required: true },
     uploads: { type: [uploadSchema], required: false, default: [] },

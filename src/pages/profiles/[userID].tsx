@@ -1,4 +1,5 @@
 import { GetServerSideProps } from "next";
+import Head from "next/head";
 import Image from "next/image";
 import { AiOutlineFrown } from "react-icons/ai";
 
@@ -9,6 +10,7 @@ interface Upload {
 }
 
 interface UserProfile {
+    username: string;
     userID: string;
     discordAvatar: string;
     uploads: Upload[];
@@ -33,8 +35,12 @@ export const getServerSideProps: GetServerSideProps = async context => {
 };
 
 export default function UserProfilePage({ profile }: { profile: UserProfile }): JSX.Element {
+    const profileHeadMsg = `${profile.username || profile.userID}'s Profile`;
     return (
         <div className="flex min-h-screen flex-col bg-gradient-to-br from-gray-900 via-black to-gray-800 p-4 md:flex-row">
+            <Head>
+                <title>{profileHeadMsg}</title>
+            </Head>
             <aside className="mb-6 flex flex-col items-center rounded-lg bg-gradient-to-b from-gray-800 to-black p-6 shadow-md md:mb-0 md:mr-6 md:w-1/4 md:items-start">
                 <div className="mb-4 flex items-center space-x-4">
                     <Image
@@ -46,7 +52,9 @@ export default function UserProfilePage({ profile }: { profile: UserProfile }): 
                         height={60}
                         className="rounded-full shadow-md"
                     />
-                    <h1 className="text-2xl font-semibold text-white">{profile.userID}</h1>
+                    <h1 className="text-2xl font-semibold text-white">
+                        {profile.username || profile.userID}
+                    </h1>
                 </div>
 
                 <p className="mb-2 text-xs text-gray-400">

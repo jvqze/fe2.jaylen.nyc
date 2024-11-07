@@ -23,6 +23,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
                 return res.status(200).json({
                     userID: userProfile.userID,
+                    username: userProfile.username,
                     discordAvatar: userProfile.discordAvatar,
                     createdAt: userProfile.createdAt,
                     uploads: userProfile.uploads

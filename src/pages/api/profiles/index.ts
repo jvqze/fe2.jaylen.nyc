@@ -1,7 +1,7 @@
 import { NextApiRequest, NextApiResponse } from "next";
 
-import MongooseConnect from "../../lib/MongooseConnect";
-import userProfileModel from "../../models/UserProfile";
+import MongooseConnect from "../../../lib/MongooseConnect";
+import userProfileModel from "../../../models/UserProfile";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     if (req.method !== "GET") {
@@ -11,7 +11,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     try {
         await MongooseConnect();
 
-        const profiles = await userProfileModel.find({}, "userID discordAvatar createdAt").lean();
+        const profiles = await userProfileModel
+            .find({}, "userID username discordAvatar createdAt")
+            .lean();
         res.status(200).json(profiles);
     } catch (error) {
         console.error("Error fetching profiles:", error);

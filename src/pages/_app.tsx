@@ -14,7 +14,7 @@ export default function App({
         <SessionProvider session={session}>
             <nav className="flex items-center justify-between bg-black p-4 text-white shadow-md">
                 <h1 className="text-2xl font-semibold">
-                    FE2 Audio Uploader <span className="font-light">By Jaylen</span>
+                    FE2 Audio Uploader
                 </h1>
                 <div className="flex items-center space-x-3">
                     <Link
@@ -35,6 +35,17 @@ export default function App({
                 </div>
             </nav>
             <Component {...pageProps} />
+            <footer className="bg-black text-white py-4 text-center mt-8">
+                <div className="flex justify-center space-x-4">
+                    <Link href="/legal/terms" className="text-sm text-gray-400 hover:underline">
+                        Terms of Service
+                    </Link>
+                    <Link href="/legal/policy" className="text-sm text-gray-400 hover:underline">
+                        Privacy Policy
+                    </Link>
+                </div>
+                <p className="text-xs text-gray-500 mt-2">Made with 💖 By Jaylen</p>
+            </footer>
         </SessionProvider>
     );
 }
