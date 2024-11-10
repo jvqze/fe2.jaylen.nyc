@@ -13,9 +13,7 @@ export default function App({
     return (
         <SessionProvider session={session}>
             <nav className="flex items-center justify-between bg-black p-4 text-white shadow-md">
-                <h1 className="text-2xl font-semibold">
-                    FE2 Audio Uploader
-                </h1>
+                <h1 className="text-2xl font-semibold">FE2 Audio Uploader</h1>
                 <div className="flex items-center space-x-3">
                     <Link
                         href="/"
@@ -35,7 +33,7 @@ export default function App({
                 </div>
             </nav>
             <Component {...pageProps} />
-            <footer className="bg-black text-white py-4 text-center mt-8">
+            <footer className="mt-8 bg-black py-4 text-center text-white">
                 <div className="flex justify-center space-x-4">
                     <Link href="/legal/terms" className="text-sm text-gray-400 hover:underline">
                         Terms of Service
@@ -44,7 +42,7 @@ export default function App({
                         Privacy Policy
                     </Link>
                 </div>
-                <p className="text-xs text-gray-500 mt-2">Made with 💖 By Jaylen</p>
+                <p className="mt-2 text-xs text-gray-500">Made with 💖 By Jaylen</p>
             </footer>
         </SessionProvider>
     );

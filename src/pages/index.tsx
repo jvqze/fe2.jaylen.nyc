@@ -105,9 +105,19 @@ export default function Page(): JSX.Element {
             const result = await res.json();
             if (result.success) {
                 setNotification({ message: "File uploaded successfully!", type: "success" });
-                await saveToMongoose(result.data.direct_url, title, isPrivate);
-                navigator.clipboard.writeText(result.data.direct_url);
-                setNotification({ message: "URL copied to clipboard!", type: "success" });
+                await saveToMongoose(
+                    result.data.direct_url,
+                    title,
+                    isPrivate,
+                    result.data.deletion_url,
+                );
+
+                try {
+                    navigator.clipboard.writeText(result.data.direct_url);
+                    setNotification({ message: "URL copied to clipboard!", type: "success" });
+                } catch (error) {
+                    console.error("User wasn't focused on window, not copied to clipboard", error);
+                }
             } else {
                 setNotification({ message: "Upload failed. Please try again.", type: "error" });
             }
@@ -118,7 +128,12 @@ export default function Page(): JSX.Element {
         }
     };
 
-    const saveToMongoose = async (fileUrl: string, title: string, isPrivate: boolean) => {
+    const saveToMongoose = async (
+        fileUrl: string,
+        title: string,
+        isPrivate: boolean,
+        deletion_url: string,
+    ) => {
         try {
             const res = await fetch("/api/saveFile", {
                 method: "POST",
@@ -130,6 +145,7 @@ export default function Page(): JSX.Element {
                     audioLink: fileUrl,
                     title: title,
                     private: isPrivate,
+                    deletion_url: deletion_url,
                     createdAt: new Date(),
                 }),
             });

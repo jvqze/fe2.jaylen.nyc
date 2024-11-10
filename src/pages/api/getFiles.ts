@@ -23,10 +23,16 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
                 return res.status(200).json(
                     userProfile.uploads?.map(
-                        (upload: { title: string; audioLink: string; createdAt: Date }) => ({
+                        (upload: {
+                            title: string;
+                            audioLink: string;
+                            createdAt: Date;
+                            deletion_url: string;
+                        }) => ({
                             name: upload.title,
                             link: upload.audioLink,
                             createdAt: upload.createdAt,
+                            deletion_url: upload.deletion_url,
                         }),
                     ) || [],
                 );
@@ -37,7 +43,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
         default:
             res.setHeader("Allow", ["GET"]);
-            console.log("no thanks");
             return res.status(405).end(`Method ${method} Not Allowed`);
     }
 }

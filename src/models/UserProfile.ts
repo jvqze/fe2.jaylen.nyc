@@ -4,6 +4,7 @@ const uploadSchema = new Schema({
     audioLink: { type: String, required: true },
     title: { type: String },
     private: { type: Boolean },
+    deletion_url: { type: String },
     createdAt: { type: Date, default: Date.now },
 });
 
