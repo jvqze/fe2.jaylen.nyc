@@ -201,12 +201,11 @@ export default function Page(): JSX.Element {
         .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
 
     return (
-        <div>
+            <main className="flex min-h-screen flex-col items-center justify-center p-6 text-white">
             <Head>
                 <title>FE2 Audio Uploader</title>
             </Head>
 
-            <main className="flex min-h-screen flex-col items-center justify-center p-6 text-white">
                 {session && (
                     <>
                         <div className="relative flex items-center space-x-4">
@@ -327,6 +326,5 @@ export default function Page(): JSX.Element {
                     <Notification message={notification.message} type={notification.type} />
                 )}
             </main>
-        </div>
     );
 }
