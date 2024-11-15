@@ -1,4 +1,4 @@
-import { model, models, Schema } from "mongoose";
+import { model, models, Schema } from 'mongoose';
 
 const uploadSchema = new Schema({
     audioLink: { type: String, required: true },
@@ -25,5 +25,5 @@ const userProfileSchema = new Schema({
     createdAt: { type: Date, default: Date.now },
 });
 
-const userProfileModel = models.userProfile || model("userProfile", userProfileSchema);
+const userProfileModel = models.userProfile || model('userProfile', userProfileSchema);
 export default userProfileModel;

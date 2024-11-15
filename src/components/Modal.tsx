@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState } from 'react';
 
 interface ModalProps {
     onClose: () => void;
@@ -6,11 +6,11 @@ interface ModalProps {
 }
 
 const Modal: React.FC<ModalProps> = ({ onClose, onConfirm }) => {
-    const [title, setTitle] = useState("");
+    const [title, setTitle] = useState('');
 
     const handleConfirm = (isPrivate: boolean) => {
-        if (title.trim() === "") {
-            alert("Please enter a title for the audio file.");
+        if (title.trim() === '') {
+            alert('Please enter a title for the audio file.');
             return;
         }
         onConfirm(isPrivate, title);

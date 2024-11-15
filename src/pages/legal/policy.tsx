@@ -1,4 +1,4 @@
-import Head from "next/head";
+import Head from 'next/head';
 
 export default function PrivacyPolicy() {
     return (
@@ -59,7 +59,7 @@ export default function PrivacyPolicy() {
             <p className="mb-6 text-lg">
                 Depending on your jurisdiction, you may have rights to access, update, or delete
                 your data per your request. If you have any questions about your data, please
-                contact Jaylen at{" "}
+                contact Jaylen at{' '}
                 <a href="mailto:me@jaylen.nyc" className="text-purple-300 underline">
                     me@jaylen.nyc
                 </a>

@@ -1,10 +1,10 @@
-import "../styles/globals.css";
+import '../styles/globals.css';
 
-import { SessionProvider } from "next-auth/react";
-import { AppProps } from "next/app";
-import Link from "next/link";
+import { SessionProvider } from 'next-auth/react';
+import { AppProps } from 'next/app';
+import Link from 'next/link';
 
-import AccountProfile from "../components/Account";
+import AccountProfile from '../components/Account';
 
 export default function App({
     Component,

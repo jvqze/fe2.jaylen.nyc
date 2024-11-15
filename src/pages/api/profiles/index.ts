@@ -1,22 +1,22 @@
-import { NextApiRequest, NextApiResponse } from "next";
+import { NextApiRequest, NextApiResponse } from 'next';
 
-import MongooseConnect from "../../../lib/MongooseConnect";
-import userProfileModel from "../../../models/UserProfile";
+import MongooseConnect from '../../../lib/MongooseConnect';
+import userProfileModel from '../../../models/UserProfile';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-    if (req.method !== "GET") {
-        return res.status(405).json({ success: false, message: "Method Not Allowed" });
+    if (req.method !== 'GET') {
+        return res.status(405).json({ success: false, message: 'Method Not Allowed' });
     }
 
     try {
         await MongooseConnect();
 
         const profiles = await userProfileModel
-            .find({}, "userID username discordAvatar createdAt")
+            .find({}, 'userID username discordAvatar badges createdAt')
             .lean();
         res.status(200).json(profiles);
     } catch (error) {
-        console.error("Error fetching profiles:", error);
-        res.status(500).json({ success: false, message: "Failed to fetch profiles" });
+        console.error('Error fetching profiles:', error);
+        res.status(500).json({ success: false, message: 'Failed to fetch profiles' });
     }
 }
