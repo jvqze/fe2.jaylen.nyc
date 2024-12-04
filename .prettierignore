@@ -2,5 +2,7 @@
 .next
 build
 dist
+CODE_OF_CONDUCT.md
+README.md
 package-lock.json
 pnpm-lock.yaml

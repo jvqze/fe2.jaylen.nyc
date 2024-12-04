@@ -1,14 +1,15 @@
-import mongoose from "mongoose";
-import NextAuth, { NextAuthOptions } from "next-auth";
-import DiscordProvider from "next-auth/providers/discord";
+import mongoose from 'mongoose';
+import NextAuth, { NextAuthOptions } from 'next-auth';
+import DiscordProvider from 'next-auth/providers/discord';
 
-import userProfileModel from "../../../models/UserProfile";
+import userProfileModel from '../../../models/UserProfile';
 
 export const authOptions: NextAuthOptions = {
     providers: [
         DiscordProvider({
             clientId: process.env.DISCORD_CLIENT_ID as string,
             clientSecret: process.env.DISCORD_CLIENT_SECRET as string,
+            authorization: { params: { scope: 'identify' } },
         }),
     ],
     callbacks: {

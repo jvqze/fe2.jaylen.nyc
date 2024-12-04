@@ -1,13 +1,13 @@
-import { useSession } from "next-auth/react";
-import Head from "next/head";
-import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
-import { FaCheckCircle, FaCopy, FaExclamationCircle } from "react-icons/fa";
+import { useSession } from 'next-auth/react';
+import Head from 'next/head';
+import { useRouter } from 'next/router';
+import { useEffect, useState } from 'react';
+import { FaCheckCircle, FaCopy, FaExclamationCircle } from 'react-icons/fa';
 
 const isValidAudioUrl = (url: string) => {
     try {
         const parsedUrl = new URL(url);
-        return parsedUrl.protocol === "https:" && parsedUrl.hostname === "cdn.jaylen.nyc";
+        return parsedUrl.protocol === 'https:' && parsedUrl.hostname === 'cdn.jaylen.nyc';
     } catch {
         return false;
     }
@@ -30,19 +30,19 @@ export default function AudioStudio() {
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
     useEffect(() => {
-        if (typeof file === "string" && isValidAudioUrl(file)) {
+        if (typeof file === 'string' && isValidAudioUrl(file)) {
             setAudioUrl(file);
             setErrorMessage(null);
-            console.log("Found file:", file);
+            console.log('Found file:', file);
         } else {
-            console.error("Invalid audio URL.");
-            setErrorMessage("Invalid audio URL. Please check the link and try again.");
+            console.error('Invalid audio URL.');
+            setErrorMessage('Invalid audio URL. Please check the link and try again.');
         }
     }, [file]);
 
     const handleTrimAudio = async () => {
         if (!audioUrl || endTime === null || startTime >= endTime) {
-            setErrorMessage("Please set a valid start and end time.");
+            setErrorMessage('Please set a valid start and end time.');
             return;
         }
 
@@ -50,9 +50,9 @@ export default function AudioStudio() {
         setErrorMessage(null);
 
         try {
-            const response = await fetch("/api/AudioTrim", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
+            const response = await fetch('/api/AudioTrim', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     audioUrl,
                     startTime,
@@ -70,11 +70,11 @@ export default function AudioStudio() {
             if (data.success) {
                 setNewAudioUrl(data.trimmedAudioUrl);
             } else {
-                setErrorMessage("Audio trimming failed. Please try again.");
+                setErrorMessage('Audio trimming failed. Please try again.');
             }
         } catch (error) {
-            console.error("Error trimming audio:", error);
-            setErrorMessage("An error occurred while trimming the audio. Please try again.");
+            console.error('Error trimming audio:', error);
+            setErrorMessage('An error occurred while trimming the audio. Please try again.');
         } finally {
             setIsProcessing(false);
         }
@@ -86,26 +86,26 @@ export default function AudioStudio() {
         setErrorMessage(null);
 
         try {
-            const keyResponse = await fetch("/api/getKey");
+            const keyResponse = await fetch('/api/getKey');
             const { tixteApiKey } = await keyResponse.json();
             const audioResponse = await fetch(newAudioUrl);
             const audioBlob = await audioResponse.blob();
             const audioFile = new File([audioBlob], `Trimmed_Audio_${Date.now()}.mp3`, {
-                type: "audio/mpeg",
+                type: 'audio/mpeg',
             });
 
             const formData = new FormData();
             formData.append(
-                "payload_json",
+                'payload_json',
                 JSON.stringify({
-                    domain: "cdn.jaylen.nyc",
+                    domain: 'cdn.jaylen.nyc',
                     name: audioFile.name,
                 }),
             );
-            formData.append("file", audioFile);
+            formData.append('file', audioFile);
 
-            const uploadResponse = await fetch("https://api.tixte.com/v1/upload", {
-                method: "POST",
+            const uploadResponse = await fetch('https://api.tixte.com/v1/upload', {
+                method: 'POST',
                 headers: { Authorization: tixteApiKey },
                 body: formData,
             });
@@ -114,11 +114,11 @@ export default function AudioStudio() {
             if (uploadData.success) {
                 setUploadedAudioUrl(uploadData.data.direct_url);
             } else {
-                setErrorMessage("Failed to upload audio to Tixte.");
+                setErrorMessage('Failed to upload audio to Tixte.');
             }
         } catch (error) {
-            console.error("Error uploading trimmed audio:", error);
-            setErrorMessage("An error occurred while uploading the trimmed audio.");
+            console.error('Error uploading trimmed audio:', error);
+            setErrorMessage('An error occurred while uploading the trimmed audio.');
         } finally {
             setIsUploading(false);
         }
@@ -133,22 +133,27 @@ export default function AudioStudio() {
         }
     };
 
-    if (status === "loading") return <p className="text-white">Loading...</p>;
-
-    if (!session) {
+   /* if (status === 'loading')
         return (
-            <div className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-br from-black to-gray-900 text-white">
-                <Head>
-                    <title>Unauthorized</title>
-                </Head>
-                <h1 className="mb-2 text-3xl font-extrabold">Audio Studio</h1>
-                <p className="text-sm text-gray-400">Please authorize with Discord to continue.</p>
-            </div>
-        );
-    }
+            <p className="text-white">
+                Audio not valid, please go back to the main page and find the correct audio
+            </p>
+        );*/
 
+    // if (!session) {
     return (
-        <div className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-br from-black to-gray-900 text-white">
+        <div className="flex min-h-screen flex-col items-center justify-center text-white">
+            <Head>
+                <title>Unauthorized</title>
+            </Head>
+            <h1 className="mb-2 text-3xl font-extrabold">Audio Studio</h1>
+            <p className="text-sm text-gray-400">Closed for further maintenance</p>
+        </div>
+    );
+    // }
+
+    /* return (
+        <div className="flex min-h-screen flex-col items-center justify-center text-white">
             <Head>
                 <title>{audioUrl}</title>
             </Head>
@@ -195,7 +200,7 @@ export default function AudioStudio() {
                             <input
                                 type="number"
                                 id="end-time"
-                                value={endTime ?? ""}
+                                value={endTime ?? ''}
                                 min={startTime}
                                 step="any"
                                 className="w-24 rounded bg-gray-800 p-2"
@@ -207,10 +212,10 @@ export default function AudioStudio() {
                             onClick={handleTrimAudio}
                             disabled={isProcessing}
                             className={`mt-6 w-full rounded-lg py-3 text-center font-semibold ${
-                                isProcessing ? "bg-gray-700" : "bg-blue-600 hover:bg-blue-500"
+                                isProcessing ? 'bg-gray-700' : 'bg-blue-600 hover:bg-blue-500'
                             } text-white`}
                         >
-                            {isProcessing ? "Processing..." : "Trim & Offset Audio"}
+                            {isProcessing ? 'Processing...' : 'Trim & Offset Audio'}
                         </button>
 
                         {newAudioUrl && (
@@ -220,11 +225,11 @@ export default function AudioStudio() {
                                     disabled={isUploading}
                                     className={`w-full rounded-lg px-4 py-3 text-center font-semibold ${
                                         isUploading
-                                            ? "bg-gray-700"
-                                            : "bg-gray-600 hover:bg-gray-500"
+                                            ? 'bg-gray-700'
+                                            : 'bg-gray-600 hover:bg-gray-500'
                                     } text-white`}
                                 >
-                                    {isUploading ? "Uploading..." : "Upload Processed Audio"}
+                                    {isUploading ? 'Uploading...' : 'Upload Processed Audio'}
                                 </button>
                                 <audio
                                     controls
@@ -259,4 +264,5 @@ export default function AudioStudio() {
             )}
         </div>
     );
+    */
 }

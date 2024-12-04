@@ -1,25 +1,25 @@
-import { useSession } from "next-auth/react";
-import { useState } from "react";
+import { useSession } from 'next-auth/react';
+import { useState } from 'react';
 
 export default function BadgesPage() {
     const { data: session } = useSession();
-    const [userIdToAward, setUserIdToAward] = useState("");
-    const [badgeData, setBadgeData] = useState({ name: "", description: "", icon: "", type: "" });
-    const developerId = "1203092268672753785";
+    const [userIdToAward, setUserIdToAward] = useState('');
+    const [badgeData, setBadgeData] = useState({ name: '', description: '', icon: '', type: '' });
+    const developerId = '1203092268672753785';
 
     if (!session || session.user.email !== developerId) {
         return (
-            <div className="flex h-screen items-center justify-center bg-gray-800">
+            <div className="flex h-screen items-center justify-center">
                 <h1 className="text-3xl font-bold">Forbidden</h1>
             </div>
         );
     }
 
     const handleAwardBadge = async () => {
-        const response = await fetch("/api/giveBadge", {
-            method: "POST",
+        const response = await fetch('/api/giveBadge', {
+            method: 'POST',
             headers: {
-                "Content-Type": "application/json",
+                'Content-Type': 'application/json',
             },
             body: JSON.stringify({
                 userId: userIdToAward,
@@ -28,15 +28,15 @@ export default function BadgesPage() {
         });
 
         if (response.ok) {
-            alert("Badge awarded successfully!");
+            alert('Badge awarded successfully!');
         } else {
-            alert("Error awarding badge");
+            alert('Error awarding badge');
         }
     };
 
     return (
-        <div className="min-h-screen bg-gray-900 text-white">
-            <div className="container mx-auto p-6">
+        <div className="text-white">
+            <div className="mx-auto p-6">
                 <h1 className="mb-8 text-center text-4xl font-bold text-indigo-400">
                     Admin Badge Management
                 </h1>

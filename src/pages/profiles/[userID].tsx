@@ -1,7 +1,9 @@
-import { GetServerSideProps } from "next";
-import Head from "next/head";
-import Image from "next/image";
-import { AiOutlineFrown } from "react-icons/ai";
+import { GetServerSideProps } from 'next';
+import Head from 'next/head';
+import Image from 'next/image';
+import { AiOutlineFrown } from 'react-icons/ai';
+import { FaAward, FaCrown, FaFlask } from 'react-icons/fa';
+import { MdStar, MdVerified } from 'react-icons/md';
 
 interface Upload {
     title: string;
@@ -9,11 +11,20 @@ interface Upload {
     createdAt: string;
 }
 
+interface Badge {
+    name: string;
+    description: string;
+    icon: string;
+    type: string;
+    awardedAt: string;
+}
+
 interface UserProfile {
     username: string;
     userID: string;
     discordAvatar: string;
     uploads: Upload[];
+    badges: Badge[];
     createdAt: string;
 }
 
@@ -34,26 +45,41 @@ export const getServerSideProps: GetServerSideProps = async context => {
     };
 };
 
+const iconMap: Record<string, JSX.Element> = {
+    FaAward: <FaAward className="text-white" />,
+    FaCrown: <FaCrown className="text-white" />,
+    FaFlask: <FaFlask className="text-white" />,
+    MdStar: <MdStar className="text-white" />,
+    MdVerified: <MdVerified className="text-white" />,
+};
+
 export default function UserProfilePage({ profile }: { profile: UserProfile }): JSX.Element {
     const profileHeadMsg = `${profile.username || profile.userID}'s Profile`;
     return (
-        <div className="flex min-h-screen flex-col bg-gradient-to-br from-gray-900 via-black to-gray-800 p-4 md:flex-row">
+        <div className="flex min-h-screen flex-col p-4 md:flex-row">
             <Head>
                 <title>{profileHeadMsg}</title>
             </Head>
-            <aside className="mb-6 flex flex-col items-center rounded-lg bg-gradient-to-b from-gray-800 to-black p-6 shadow-md md:mb-0 md:mr-6 md:w-1/4 md:items-start">
+            <aside className="mb-6 flex flex-col items-center rounded-lg bg-[#1d1d22be] p-6 shadow-md md:mb-0 md:mr-6 md:w-1/4 md:items-start">
                 <div className="mb-4 flex items-center space-x-4">
                     <Image
                         src={
-                            profile.discordAvatar || "https://cdn.jaylen.nyc/r/default-profile.jpg"
+                            profile.discordAvatar || 'https://cdn.jaylen.nyc/r/default-profile.jpg'
                         }
                         alt="User Avatar"
                         width={60}
                         height={60}
                         className="rounded-full shadow-md"
                     />
-                    <h1 className="text-2xl font-semibold text-white">
-                        {profile.username || profile.userID}
+                    <h1 className="flex items-center text-2xl font-semibold text-white">
+                        <span>{profile.username || profile.userID}</span>
+                        <span className="ml-2 flex space-x-1">
+                            {profile.badges?.map((badge, index) => (
+                                <span key={index} title={badge.name}>
+                                    {iconMap[badge.icon] || null}
+                                </span>
+                            ))}
+                        </span>
                     </h1>
                 </div>
 
@@ -65,14 +91,13 @@ export default function UserProfilePage({ profile }: { profile: UserProfile }): 
                 </div>
             </aside>
 
-            <main className="flex-grow rounded-lg bg-gradient-to-b from-gray-800 to-black p-6 text-white shadow-lg md:w-3/4">
-                <h2 className="mb-4 text-center text-2xl font-semibold">Uploads</h2>
+            <main className="flex-grow rounded-lg bg-[#1d1d22be] p-6 text-white shadow-lg md:w-3/4">
                 <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
                     {profile.uploads.length > 0 ? (
                         profile.uploads.map((upload, index) => (
                             <div
                                 key={index}
-                                className="transform rounded-lg bg-gray-700 p-4 shadow-md transition-transform hover:scale-105"
+                                className="transform rounded-lg bg-[#383841be] p-4 shadow-md transition-transform hover:scale-105"
                             >
                                 <p className="truncate font-semibold text-white">{upload.title}</p>
                                 <audio controls className="mt-3 w-full overflow-hidden rounded-lg">

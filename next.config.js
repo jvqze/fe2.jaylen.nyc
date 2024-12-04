@@ -9,7 +9,7 @@ module.exports = {
         }
         config.module.rules.push({
             test: /\.svg$/,
-            use: ["@svgr/webpack"],
+            use: ['@svgr/webpack'],
         });
         return config;
     },
@@ -17,14 +17,14 @@ module.exports = {
     images: {
         remotePatterns: [
             {
-                protocol: "https",
-                hostname: "cdn.jaylen.nyc",
-                pathname: "/**",
+                protocol: 'https',
+                hostname: 'cdn.jaylen.nyc',
+                pathname: '/**',
             },
             {
-                protocol: "https",
-                hostname: "cdn.discordapp.com",
-                pathname: "/**",
+                protocol: 'https',
+                hostname: 'cdn.discordapp.com',
+                pathname: '/**',
             },
         ],
     },

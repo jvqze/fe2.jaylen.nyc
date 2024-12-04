@@ -1,5 +1,5 @@
-import dotenv from "dotenv";
-import mongoose from "mongoose";
+import dotenv from 'dotenv';
+import mongoose from 'mongoose';
 
 dotenv.config();
 
@@ -9,14 +9,13 @@ declare global {
 
 const MONGODB_URI = process.env.MONGODB_URI as string;
 if (!MONGODB_URI) {
-    throw new Error("Please define the MONGODB_URI environment variable inside .env.local");
+    throw new Error('Please define the MONGODB_URI environment variable inside .env.local');
 }
 
 let connection: Promise<typeof mongoose>;
 
 export default async function MongooseConnect() {
     if (mongoose.connections[0].readyState) {
-        console.log("Mongoose is already connected.");
         return;
     }
 
@@ -25,15 +24,15 @@ export default async function MongooseConnect() {
             socketTimeoutMS: 45000,
             connectTimeoutMS: 10000,
             autoIndex:
-                process.env.VERCEL_ENV !== "production" || process.env.NODE_ENV !== "production",
+                process.env.VERCEL_ENV !== 'production' || process.env.NODE_ENV !== 'production',
         });
     }
 
     try {
         await connection;
-        console.log("Mongoose is connected to the database.");
+        console.log('Mongoose is connected to the database.');
     } catch (err) {
-        console.error("Mongoose connection error:", err);
-        throw new Error("Database connection failed");
+        console.error('Mongoose connection error:', err);
+        throw new Error('Database connection failed');
     }
 }

@@ -5,13 +5,13 @@ This project is an **open-source tool** designed for users who want to upload cu
 ## Features
 
 -   **Audio Uploader**: Upload `.mp3` or `.ogg` files to use in your FE2 maps.
--   **List Page **NEW\***\*: View a list of all your uploaded audio files, with direct links to each file. **List page is now under the main page!\*\*
+-   **List Page **NEW**: View a list of all your uploaded audio files, with direct links to each file. **List page is now under the main page!**
 -   **Discord Integration**: Authorize with your Discord account to track your uploads.
 -   **Open Source**: This project is open source, meaning you can clone, modify, or contribute to it.
 
-## Live Version
+## Main Website
 
-While the project is open-source, the live version of this uploader can be accessed by anyone at:
+While the project is open-source, the main website of this uploader can be accessed by anyone at:
 
 -   **FE2 Audio Uploader**: <https://fe2.jaylen.nyc/>
 
@@ -75,11 +75,13 @@ Before setting up the project locally, ensure you have the following installed o
 4. Create a `.env` file in the root directory, and add the required environment variables:
 
     ```
-    DISCORD_CLIENT_ID=your-discord-client-id
-    DISCORD_CLIENT_SECRET=your-discord-client-secret
-    MONGODB_URI=mongodb-uri
-    TIXTE_API_KEY=api-key-for-tixte
-    NEXTAUTH_SECRET=your-next-auth-secret
+    DISCORD_CLIENT_ID="DISCORD_CLIENT_ID"
+    DISCORD_CLIENT_SECRET="DISCORD_SECRET"
+    MONGODB_URI=""
+    TIXTE_API_KEY="KEY"
+    NEXTAUTH_SECRET="SECRET"
+    CLOUDINARY_API_KEY="API-KEY-HERE"
+    NEXT_PUBLIC_API_BASE_URL="http://localhost:3000 or your main website"
     ```
 
 5. Start the development server:

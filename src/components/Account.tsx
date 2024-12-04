@@ -1,5 +1,5 @@
-import { signIn, signOut, useSession } from "next-auth/react";
-import Image from "next/image";
+import { signIn, signOut, useSession } from 'next-auth/react';
+import Image from 'next/image';
 
 export default function AccountButton() {
     const { data: session } = useSession();
@@ -25,7 +25,7 @@ export default function AccountButton() {
                 </div>
             ) : (
                 <button
-                    onClick={() => signIn("discord")}
+                    onClick={() => signIn('discord')}
                     className="flex items-center justify-center space-x-3 rounded bg-blue-600 px-4 py-2 text-sm text-white shadow-lg transition hover:bg-blue-700"
                 >
                     <span>Authorize with Discord</span>
