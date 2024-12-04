@@ -2,6 +2,8 @@ import { GetServerSideProps } from 'next';
 import Head from 'next/head';
 import Image from 'next/image';
 import { AiOutlineFrown } from 'react-icons/ai';
+import { FaAward, FaCrown, FaFlask } from 'react-icons/fa';
+import { MdStar, MdVerified } from 'react-icons/md';
 
 interface Upload {
     title: string;
@@ -9,11 +11,20 @@ interface Upload {
     createdAt: string;
 }
 
+interface Badge {
+    name: string;
+    description: string;
+    icon: string;
+    type: string;
+    awardedAt: string;
+}
+
 interface UserProfile {
     username: string;
     userID: string;
     discordAvatar: string;
     uploads: Upload[];
+    badges: Badge[];
     createdAt: string;
 }
 
@@ -34,6 +45,14 @@ export const getServerSideProps: GetServerSideProps = async context => {
     };
 };
 
+const iconMap: Record<string, JSX.Element> = {
+    FaAward: <FaAward className="text-white" />,
+    FaCrown: <FaCrown className="text-white" />,
+    FaFlask: <FaFlask className="text-white" />,
+    MdStar: <MdStar className="text-white" />,
+    MdVerified: <MdVerified className="text-white" />,
+};
+
 export default function UserProfilePage({ profile }: { profile: UserProfile }): JSX.Element {
     const profileHeadMsg = `${profile.username || profile.userID}'s Profile`;
     return (
@@ -52,8 +71,15 @@ export default function UserProfilePage({ profile }: { profile: UserProfile }): 
                         height={60}
                         className="rounded-full shadow-md"
                     />
-                    <h1 className="text-2xl font-semibold text-white">
-                        {profile.username || profile.userID}
+                    <h1 className="flex items-center text-2xl font-semibold text-white">
+                        <span>{profile.username || profile.userID}</span>
+                        <span className="ml-2 flex space-x-1">
+                            {profile.badges?.map((badge, index) => (
+                                <span key={index} title={badge.name}>
+                                    {iconMap[badge.icon] || null}
+                                </span>
+                            ))}
+                        </span>
                     </h1>
                 </div>
 

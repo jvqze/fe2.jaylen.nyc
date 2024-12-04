@@ -16,7 +16,6 @@ let connection: Promise<typeof mongoose>;
 
 export default async function MongooseConnect() {
     if (mongoose.connections[0].readyState) {
-        console.log('Mongoose is already connected.');
         return;
     }
 

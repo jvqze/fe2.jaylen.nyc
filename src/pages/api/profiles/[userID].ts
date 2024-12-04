@@ -33,6 +33,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                             audioLink: upload.audioLink,
                             createdAt: upload.createdAt,
                         })),
+                    badges: userProfile.badges,
                 });
             } catch (error) {
                 console.error('Error fetching user profile:', error);

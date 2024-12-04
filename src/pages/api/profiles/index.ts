@@ -10,7 +10,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     try {
         await MongooseConnect();
-
         const profiles = await userProfileModel
             .find({}, 'userID username discordAvatar badges createdAt')
             .lean();

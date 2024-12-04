@@ -133,21 +133,26 @@ export default function AudioStudio() {
         }
     };
 
-    if (status === 'loading') return <p className="text-white">Loading...</p>;
-
-    if (!session) {
+   /* if (status === 'loading')
         return (
-            <div className="flex min-h-screen flex-col items-center justify-center text-white">
-                <Head>
-                    <title>Unauthorized</title>
-                </Head>
-                <h1 className="mb-2 text-3xl font-extrabold">Audio Studio</h1>
-                <p className="text-sm text-gray-400">Please authorize with Discord to continue.</p>
-            </div>
-        );
-    }
+            <p className="text-white">
+                Audio not valid, please go back to the main page and find the correct audio
+            </p>
+        );*/
 
+    // if (!session) {
     return (
+        <div className="flex min-h-screen flex-col items-center justify-center text-white">
+            <Head>
+                <title>Unauthorized</title>
+            </Head>
+            <h1 className="mb-2 text-3xl font-extrabold">Audio Studio</h1>
+            <p className="text-sm text-gray-400">Closed for further maintenance</p>
+        </div>
+    );
+    // }
+
+    /* return (
         <div className="flex min-h-screen flex-col items-center justify-center text-white">
             <Head>
                 <title>{audioUrl}</title>
@@ -259,4 +264,5 @@ export default function AudioStudio() {
             )}
         </div>
     );
+    */
 }
